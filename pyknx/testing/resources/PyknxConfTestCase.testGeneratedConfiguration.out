@@ -1,0 +1,25 @@
+<config>
+	<services>
+		<xmlserver port="1030" type="inet"/>
+		<emailserver from="linknx@foo.com" host="emailprovider.com:25" type="smtp"/>
+	<ioports><ioport host="127.0.0.1" id="pyknxcommunicator" port="1029" type="tcp"/></ioports></services>
+	<objects>
+		<object flags="r" id="Boolean" init="off" pyknxcallback="onBooleanChanged" type="1.001"/> 
+		<object flags="r" id="Unsigned Byte" init="0" pyknxcallback="onByteChanged" type="5.xxx"/> 
+		<object flags="r" id="Scaling Unsigned Byte" init="0" pyknxcallback="onByteChanged" type="5.001"/> 
+		<object flags="r" id="Angle Unsigned Byte" init="0" pyknxcallback="onByteChanged" type="5.003"/> 
+		<object flags="r" id="Byte" init="0" pyknxcallback="onByteChanged" type="6.xxx"/> 
+		<object flags="r" id="Unsigned Int16" init="0" type="7.xxx"/> 
+		<object flags="r" id="Int16" init="0" type="8.xxx"/> 
+		<object flags="r" id="Float16" init="0.0" pyknxcallback="onFloatChanged" type="9.xxx"/> 
+		<object flags="r" id="Unsigned Int32" init="0" type="12.xxx"/> 
+		<object flags="r" id="Int32" init="0" type="13.xxx"/> 
+		<object flags="r" id="Float32" init="0.0" type="14.xxx"/> 
+		<object flags="r" id="Ascii String14" init="def for 16.000" type="16.000"/> 
+		<object flags="r" id="Extended Ascii String14" init="def for 16.001" type="16.001"/> 
+		<object flags="r" id="String" init="default value for 28.001" type="28.001"/> 
+		<object flags="r" id="Int64" init="0" type="29.xxx"/> 
+		<object flags="r" id="Latin1 Char" init="à" type="4.002"/> 
+	</objects>
+	<logging level="DEBUG"/>
+<rules><rule id="pyknxcommunicatorBoolean" init="false"><condition id="Boolean" trigger="true" type="object"/><actionlist type="if-true"><action data="onBooleanChanged|objectId=Boolean$" ioport="pyknxcommunicator" type="ioport-tx"/></actionlist></rule><rule id="pyknxcommunicatorUnsigned Byte" init="false"><condition id="Unsigned Byte" trigger="true" type="object"/><actionlist type="if-true"><action data="onByteChanged|objectId=Unsigned Byte$" ioport="pyknxcommunicator" type="ioport-tx"/></actionlist></rule><rule id="pyknxcommunicatorScaling Unsigned Byte" init="false"><condition id="Scaling Unsigned Byte" trigger="true" type="object"/><actionlist type="if-true"><action data="onByteChanged|objectId=Scaling Unsigned Byte$" ioport="pyknxcommunicator" type="ioport-tx"/></actionlist></rule><rule id="pyknxcommunicatorAngle Unsigned Byte" init="false"><condition id="Angle Unsigned Byte" trigger="true" type="object"/><actionlist type="if-true"><action data="onByteChanged|objectId=Angle Unsigned Byte$" ioport="pyknxcommunicator" type="ioport-tx"/></actionlist></rule><rule id="pyknxcommunicatorByte" init="false"><condition id="Byte" trigger="true" type="object"/><actionlist type="if-true"><action data="onByteChanged|objectId=Byte$" ioport="pyknxcommunicator" type="ioport-tx"/></actionlist></rule><rule id="pyknxcommunicatorFloat16" init="false"><condition id="Float16" trigger="true" type="object"/><actionlist type="if-true"><action data="onFloatChanged|objectId=Float16$" ioport="pyknxcommunicator" type="ioport-tx"/></actionlist></rule></rules></config>

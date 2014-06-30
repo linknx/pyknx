@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./pyknxcommunicatortests.py && ./pyknxconftests.py && ./tests.py

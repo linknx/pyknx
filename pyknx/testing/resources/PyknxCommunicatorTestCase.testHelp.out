@@ -1,0 +1,31 @@
+usage: pyknxcommunicator.py [-h] [-c COMMUNICATORADDRESS] [-l LINKNXADDRESS]
+                            [--log-file FILE] [-v LEVEL]
+                            FILE
+
+Starts an instance of the Pyknx communicator daemon. The daemon is aimed at
+listening for linknx events for object changes in order to call Python
+functions that are implemented in a script that is passed to the daemon. This
+process allows for execution of Python code in reaction of object changes on
+linknx's end.
+
+positional arguments:
+  FILE                  use FILE as the user python script that implements
+                        callbacks functions declared in the linknx
+                        configuration (see the pyknxcallback attributes in
+                        XML).
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c COMMUNICATORADDRESS, --comm-addr COMMUNICATORADDRESS
+                        Address of the communicator. This argument must
+                        specify the hostname or the ip address followed by a
+                        colon and the port to listen on. Default is
+                        "localhost:1029"
+  -l LINKNXADDRESS, --linknx-addr LINKNXADDRESS
+                        Address of the linknx server to bind to. This argument
+                        must specify the hostname or the ip address followed
+                        by a colon and the port. Default is "localhost:1028"
+  --log-file FILE       write communicator's output to FILE rather than to
+                        standard output.
+  -v LEVEL, --verbose LEVEL
+                        set verbosity level. Default is "error".

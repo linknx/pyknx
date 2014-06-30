@@ -1,0 +1,4 @@
+usage: pyknxcommunicator.py [-h] [-c COMMUNICATORADDRESS] [-l LINKNXADDRESS]
+                            [--log-file FILE] [-v LEVEL]
+                            FILE
+pyknxcommunicator.py: error: the following arguments are required: FILE
