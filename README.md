@@ -9,6 +9,8 @@ Copyright (C) 2012-2014 Cyrille Defranoux
 
 Contact me at knx at aminate dot net
 
+Get the source code on Github https://github.com/2franix/pyknx
+
 ----------------------------------------------------------------------
 
 What is it?
