@@ -1,4 +1,4 @@
-# Copyright (C) 2012-2013 Cyrille Defranoux
+# Copyright (C) 2012-2014 Cyrille Defranoux
 #
 # This file is part of Pyknx.
 #
