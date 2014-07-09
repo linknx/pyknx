@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # Copyright (C) 2012-2014 Cyrille Defranoux
 #
 # This file is part of Pyknx.
@@ -17,7 +19,6 @@
 #
 # For any question, feature requests or bug reports, feel free to contact me at:
 # knx at aminate dot net
-
 
 import sys
 import getopt
