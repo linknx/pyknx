@@ -23,8 +23,8 @@
 from distutils.core import setup
 
 setup(	name='pyknx',
-		version='1.0.9',
-		description='Python bindings for KNX',
+		version='2.0.0',
+		description='Python bindings for Linknx',
 		long_description=''.join(open('README').readlines()),
 		author='Cyrille Defranoux',
 		author_email='knx@aminate.net',
