@@ -21,9 +21,14 @@
 # knx at aminate dot net
 
 from distutils.core import setup
+import sys
+
+if sys.version_info.major < 3:
+	print('This package is compatible with Python 3 and above.')
+	exit(4)
 
 setup(	name='pyknx',
-		version='2.0.0b3',
+		version='2.0.0b4',
 		description='Python bindings for Linknx',
 		long_description=''.join(open('README.md').readlines()),
 		author='Cyrille Defranoux',
