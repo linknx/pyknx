@@ -23,7 +23,7 @@
 from distutils.core import setup
 
 setup(	name='pyknx',
-		version='2.0.0b2',
+		version='2.0.0b3',
 		description='Python bindings for Linknx',
 		long_description=''.join(open('README.md').readlines()),
 		author='Cyrille Defranoux',
