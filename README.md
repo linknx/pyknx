@@ -13,6 +13,18 @@ Get the source code on Github https://github.com/2franix/pyknx
 
 ----------------------------------------------------------------------
 
+Python Version Requirement
+==========================
+
+Pyknx version 1 was compatible with Python 2 only. It was not compatible with Python 3 at all.
+Pyknx version 2 is designed to work with a Python 3 environment. The main reason for this requirement is to benefit from unicode string enhancements in Python 3. Do not attempt to use it with Python 2 or you will likely get errors about ascii codec not being able to encode some characters. 
+
+Upgrade Notice
+==============
+
+Version 2 of Pyknx consists in a rework of all standalone scripts to improve their usability. Pyknx has also been modified to embed acceptance tests. The overall API of the package has been slightly changed. Unless you were using the pyknx*.py standalone scripts of Pyknx version 1, upgrading to version 2 should be seamless. But please note that version 2 is still in beta phase and may thus not completely work as expected. Things should settle down quite soon but in the meantime, you may consider using the latest version of Pyknx 1.
+As usual, feedback regarding version 2 is greatly appreciated.
+
 What is it?
 ===========
 
@@ -49,7 +61,7 @@ There is no doubt that Linknx is a very powerful, stable and simple-to-configure
 
 I first wrote a simple python script called lwknxclient whose unique functionality is to read/write Linknx object's values. This script solved the problem of easily sending data to Linknx from a bash script.
 
-But recently, my requirements evolved drastically as I wanted to implement my own alarm system to protect my home. I have a few door switches, cameras and smoke detectors that I wanted to use. I first implemented a simple version in pure XML that worked but it had many drawbacks:
+Then, my requirements evolved drastically as I wanted to implement my own alarm system to protect my home. I have a few door switches, cameras and smoke detectors that I wanted to use. I first implemented a simple version in pure XML that worked but it had many drawbacks:
 
 - the configuration is quite verbose. This is the very nature of XML. Factorization is hardly ever possible.
 - the configuration is tricky to test. I had to test it interactively after each modification. I quickly reached a point from which I was too afraid breaking something to add new functionality to my system.
@@ -103,9 +115,9 @@ This package also provides **additional python scripts** that are intended to ru
 How to install
 ==============
 Two standard ways: using pip or calling setup.py manually.
-With pip, simply do::
+With pip for Python 3 (http://www.pip-installer.org), simply do::
 
-	pip install pyknx
+	pip3 install pyknx
 
 You can optionally add --install-option="--user" to tell setup.py to install in your home rather than one the system-wide locations.
 
@@ -170,4 +182,7 @@ Fixed a minor bug in configurator.py (which impacts pyknxconf.py): passing a com
 
 2.0.0
 -----
-Reworked standalone scripts (pyknxconf, pyknxclient, pyknxcall) to increase ease of use and consistency. Pyknxclient can now for instance read several object at once. Replaced argument parsing previously done with getopt by argparse that appears to be more efficient. These breaking changes cause backward incompatibility for clients of these scripts. Please refer to the documentation of these script to learn more about their updated usage.
+Reworked standalone scripts (pyknxconf, pyknxclient, pyknxcall) to increase ease of use and consistency:
+- for instance, Pyknxclient can now read several object at once
+- replaced argument parsing previously done with getopt by argparse that appears to be more efficient.
+These breaking changes cause backward incompatibility for clients of these scripts. Please refer to the documentation of these script to learn more about their updated usage.

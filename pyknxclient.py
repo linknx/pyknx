@@ -102,8 +102,5 @@ if __name__ == '__main__':
 			raise Exception('Unsupported action {0}'.format(args.action))
 
 	except Exception as e:
-		if args.verbosityLevel.lower() == "debug":
-			logger.reportException()
-		else:
-			logger.reportError(sys.exc_info()[1])
+		logger.reportError(sys.exc_info()[1])
 		sys.exit(3)

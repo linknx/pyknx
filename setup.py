@@ -23,14 +23,15 @@
 from distutils.core import setup
 
 setup(	name='pyknx',
-		version='2.0.0',
+		version='2.0.0b2',
 		description='Python bindings for Linknx',
-		long_description=''.join(open('README').readlines()),
+		long_description=''.join(open('README.md').readlines()),
 		author='Cyrille Defranoux',
 		author_email='knx@aminate.net',
 		maintainer='Cyrille Defranoux',
 		maintainer_email='knx@aminate.net',
 		license='GNU Public General License',
-		url='https://pypi.python.org/pypi/pyknx/',
+		url='https://github.com/2franix/pyknx/',
 		packages=['pyknx'],
+		data_files=[('.', ['README.md'])],
 		scripts=['pyknxcommunicator.py', 'pyknxcall.py', 'pyknxclient.py', 'pyknxconf.py'])
