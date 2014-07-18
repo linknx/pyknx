@@ -183,8 +183,8 @@ Reverted changes regarding encoding implemented in 1.0.12. It appeared that it w
 ------
 Fixed a minor bug in configurator.py (which impacts pyknxconf.py): passing a communicator address that specifies the host by a name rather than by IP address was leading to a configuration incompatible with linknx. Linknx uses pth_connect and this function does not support named hosts. Added a conversion with socket.gethostbyname() in order to be sure to write the host's IP into the patched configuration.
 
-2.0.0b5
------
+2.0.0b7
+-------
 Reworked standalone scripts (pyknxconf, pyknxclient=>(pyknxread, pyknxwrite, pyknxexecute), pyknxcall) to increase ease of use and consistency:
 - for instance, pyknxread can now read several object at once
 - replaced argument parsing previously done with getopt by argparse that appears to be more efficient.
