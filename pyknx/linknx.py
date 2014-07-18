@@ -118,7 +118,13 @@ class Linknx:
 			raise Exception('Unsupported action details: must be a minidom XML document or element or an XML string.')
 
 		# Build XML document to send to linknx.
-		self.sendMessage('<execute>{action}</execute>'.format(action=actionXML))
+		answerDom = self.sendMessage('<execute>{action}</execute>'.format(action=actionXML))
+
+		execNodes = answerDom.getElementsByTagName("execute")
+		status = execNodes[0].getAttribute("status")
+		valueStr = None
+		if status != "success":
+			raise Exception(self._getErrorFromXML(execNodes[0]))
 
 	def waitForRemoteConnectionReady(self):
 		"""

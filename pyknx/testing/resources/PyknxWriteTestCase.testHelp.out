@@ -1,0 +1,18 @@
+usage: pyknxwrite.py [-h] [-s HOST] [-p PORT] [-v LEVEL] ID VALUE
+
+Lightweight command line client for linknx. It is aimed at writing object
+values to linknx.
+
+positional arguments:
+  ID                    ID represents the identifier of the object to write
+                        to.
+  VALUE                 Assigns VALUE to the object identified by ID.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s HOST, --server HOST
+                        Hostname of the machine running the linknx daemon.
+                        Default is localhost.
+  -p PORT, --port PORT  Port linknx listens on. Default is 1028.
+  -v LEVEL, --verbose LEVEL
+                        Set verbosity level. Default is "error".

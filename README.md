@@ -110,7 +110,10 @@ This package also provides **additional python scripts** that are intended to ru
 - **pyknxconf.py** is used to automatically patch your linknx XML configuration in order to generate the ioport service and the rules necessary for the communication between Linknx and the Python daemon to work.
 - **pyknxcommunicator.py** is the script that represents **the daemon** itself. Simply tell it where to find your user-defined python file with your implementation and it should work.
 - **pyknxcall.py** can be used to ask the daemon to **perform a function call**. For instance 'pyknxcall.py -amyArgument=2 myCallback' should call the function myCallback(context) in your user-defined file. The passed context will contain a property named myArgument whose value is 2. This utility script is useful to help making external applications pass data to your daemon.
-- **pyknxclient.py** is the replacement for the former **lwknxclient.py** I initially wrote a few months ago. It is a lightweight client for linknx that can retrieve or change the value of one or multiple objects at once (multiple-object requests are available for read requests only).
+- **pyknxread.py** is used to read one or multiple object values at once. Regular expressions are supported. This script is a must-have to develop more complex shell scripts involving interactions with linknx, for instance.
+- **pyknxwrite.py** is used to change one object's value.
+- **pyknxexecute.py** is used to send an XML-formatted action to linknx. See linknx documentation to learn more about the syntax to use.
+- **pyknxclient.py** is a deprecated client script that is able to read or write object values from/to linknx. This script has been split into pyknxread.py, pyknxwrite.py and pyknxexecute.py and is left in the package for compatibility. But please be aware that the three new atomic scripts are more convenient and more powerful to use and that pyknxclient.py may be removed in future versions of Pyknx.
 
 How to install
 ==============
@@ -180,9 +183,9 @@ Reverted changes regarding encoding implemented in 1.0.12. It appeared that it w
 ------
 Fixed a minor bug in configurator.py (which impacts pyknxconf.py): passing a communicator address that specifies the host by a name rather than by IP address was leading to a configuration incompatible with linknx. Linknx uses pth_connect and this function does not support named hosts. Added a conversion with socket.gethostbyname() in order to be sure to write the host's IP into the patched configuration.
 
-2.0.0
+2.0.0b5
 -----
-Reworked standalone scripts (pyknxconf, pyknxclient, pyknxcall) to increase ease of use and consistency:
-- for instance, Pyknxclient can now read several object at once
+Reworked standalone scripts (pyknxconf, pyknxclient=>(pyknxread, pyknxwrite, pyknxexecute), pyknxcall) to increase ease of use and consistency:
+- for instance, pyknxread can now read several object at once
 - replaced argument parsing previously done with getopt by argparse that appears to be more efficient.
 These breaking changes cause backward incompatibility for clients of these scripts. Please refer to the documentation of these script to learn more about their updated usage.

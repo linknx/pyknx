@@ -20,23 +20,12 @@
 # For any question, feature requests or bug reports, feel free to contact me at:
 # knx at aminate dot net
 
-from distutils.core import setup
-import sys
+"""
+Lightweight command line client for linknx. It is aimed at executing actions defined by a XML string. The action to execute is read from standard input unless the --action option is set.
+Example of a valid action: <action type="set-value" id="kitchen_heating" value="comfort"/>. This string is passed as-is to linknx so refer to linknx\'s documentation for further details.
+"""
 
-if sys.version_info.major < 3:
-	print('This package is compatible with Python 3 and above.')
-	exit(4)
+from pyknx import client
 
-setup(	name='pyknx',
-		version='2.0.0b5',
-		description='Python bindings for Linknx',
-		long_description=''.join(open('README.md').readlines()),
-		author='Cyrille Defranoux',
-		author_email='knx@aminate.net',
-		maintainer='Cyrille Defranoux',
-		maintainer_email='knx@aminate.net',
-		license='GNU Public General License',
-		url='https://github.com/2franix/pyknx/',
-		packages=['pyknx'],
-		data_files=[('.', ['README.md'])],
-		scripts=['pyknxcommunicator.py', 'pyknxcall.py', 'pyknxread.py', 'pyknxwrite.py', 'pyknxexecute.py', 'pyknxclient.py', 'pyknxconf.py'])
+if __name__ == '__main__':
+	client.handleRequest('execute', __doc__)

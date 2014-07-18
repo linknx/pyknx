@@ -37,24 +37,24 @@ import stat
 import pwd, grp
 import shutil
 
-class PyknxClientTestCase(pyknx.testing.base.WithLinknxTestCase):
+class PyknxReadTestCase(pyknx.testing.base.WithLinknxTestCase):
 	def setUp(self):
 		pyknx.testing.base.WithLinknxTestCase.setUp(self)
-		self.pyknxClientPyFile = os.path.join(self.pyknxScriptsDirectory, 'pyknxclient.py')
+		self.pyknxReadPyFile = os.path.join(self.pyknxScriptsDirectory, 'pyknxread.py')
 
 	def testHelp(self):
-		self.assertShellCommand([self.pyknxClientPyFile, '-h'], self.getResourceFullName('out'))
+		self.assertShellCommand([self.pyknxReadPyFile, '-h'], self.getResourceFullName('out'))
 
 	def testRead(self):
-		self.assertShellCommand([self.pyknxClientPyFile, '-v', 'error', '-s', self.linknx.address[0], '-p', str(self.linknx.address[1]), 'read', 'Boolean'], self.getResourceFullName('outFalse'))
-		self.assertShellCommand([self.pyknxClientPyFile, '-v', 'error', '-s', self.linknx.address[0], '-p', str(self.linknx.address[1]),'--value-only', 'read', 'Boolean'], self.getResourceFullName('outvalueonly'))
+		self.assertShellCommand([self.pyknxReadPyFile, '-v', 'error', '-s', self.linknx.address[0], '-p', str(self.linknx.address[1]), 'Boolean'], self.getResourceFullName('outFalse'))
+		self.assertShellCommand([self.pyknxReadPyFile, '-v', 'error', '-s', self.linknx.address[0], '-p', str(self.linknx.address[1]),'--value-only', 'Boolean'], self.getResourceFullName('outvalueonly'))
 		for v in (True, False):
 			self.linknx.getObject('Boolean').value = v
 			expectedStdOut = self.getResourceFullName('outTrue' if v else 'outFalse')
 			for value in ('1', 'true', 'True', 'TRUE', 'on', 'ON', 'yes', 'YES'):
-				self.assertShellCommand([self.pyknxClientPyFile, '-s', self.linknx.address[0], '-p', str(self.linknx.address[1]), '-v', 'error', '--expected-value', value, 'read', 'Boolean'], expectedReturnCode=0 if v else 100, expectedStdOut=expectedStdOut)
+				self.assertShellCommand([self.pyknxReadPyFile, '-s', self.linknx.address[0], '-p', str(self.linknx.address[1]), '-v', 'error', '--expected-value', value, 'Boolean'], expectedReturnCode=0 if v else 100, expectedStdOut=expectedStdOut)
 			for value in ('0', 'false', 'False', 'FALSE', 'off', 'OFF', 'no', 'NO'):
-				self.assertShellCommand([self.pyknxClientPyFile, '-s', self.linknx.address[0], '-p', str(self.linknx.address[1]), '-v', 'error', '--expected-value', value, 'read', 'Boolean'], expectedReturnCode=100 if v else 0, expectedStdOut=expectedStdOut)
+				self.assertShellCommand([self.pyknxReadPyFile, '-s', self.linknx.address[0], '-p', str(self.linknx.address[1]), '-v', 'error', '--expected-value', value, 'Boolean'], expectedReturnCode=100 if v else 0, expectedStdOut=expectedStdOut)
 
 	# def testWrite(self):
 

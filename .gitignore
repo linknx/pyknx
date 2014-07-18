@@ -54,5 +54,6 @@ docs/_build/
 
 # Vim tags
 **/tags
+*.swp
  
 MANIFEST

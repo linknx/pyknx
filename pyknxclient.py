@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (C) 2012-2014 Cyrille Defranoux
+# Copyright (C) 2012-2013 Cyrille Defranoux
 #
 # This file is part of Pyknx.
 #
@@ -21,11 +21,40 @@
 # knx at aminate dot net
 
 """
-Lightweight command line client for linknx. It is aimed at reading or writing object values from/to linknx or to executing actions.
+Lightweight command line client for linknx. It is aimed at reading or writing object values from/to linknx.
+When reading objects, this script outputs a line per object, each line composed of the object id and its corresponding value separated by spaces.
+
+SYNTAX:
+		pyknxclient.py [-h host] [-p port] [-v level] -r id1 [-r id2 [...]]
+		pyknxclient.py [-h host] [-p port] [-v level] -R pattern
+		pyknxclient.py [-h host] [-p port] [-v level] -w id value
+
+		Where id, id1, id2, ... are object identifiers specified in the linknx configuration XML with the 'id' attribute.
+
+OPTIONS:
+		-h, --host      Hostname of the machine running the linknx daemon (default is 'localhost').
+		-p, --port      Port linknx listens on (default is 1028).
+		-v, --verbose   Level of verbosity. Value must be one of the logging module (error, warning, info, debug)
+		-r, --read      Read value of object with given id. Can occur multiple times with various identifiers.
+		-R, --regex     Read value of all objects whose identifiers match the given regex pattern. The pattern must comply with the 're' python module.
+		-w, --write     Writes a new value to the object of given identifier.
+	        --help      Display this help message and quit.
+
+EXAMPLES:
+		Read all objects:
+			pyknxclient.py -R ".*"
+
+		Read two objects:
+			pyknxclient.py -r KitchenLights -r LivingRoomLights
+
+		Turn off kitchen lights:
+			pyknxclient.py -w KitchenLights off
+			pyknxclient.py -w KitchenLights false
+			pyknxclient.py -w KitchenLights 0
 """
 
 import sys
-import argparse
+import getopt
 import traceback
 import logging
 from xml.dom.minidom import parseString
@@ -39,32 +68,82 @@ def printUsage():
 if __name__ == '__main__':
 	logger.initLogger(None, logging.INFO, usesDetailedLogging=False)
 
-	parser = argparse.ArgumentParser(description=__doc__)
-	parser.add_argument('-s', '--server', dest='host', help='Hostname of the machine running the linknx daemon. Default is localhost.', default='localhost')
-	parser.add_argument('-p', '--port', dest='port', help='Port linknx listens on. Default is 1028.', default=1028)
-	parser.add_argument('action', help='Action to perform. ACTION can be one of {read, write, execute}.', metavar='ACTION', choices=('read', 'write', 'execute'))
-	parser.add_argument('argument', help='Action\'s argument, whose meaning depends on the action type. When ACTION=read or ACTION=write, ARG represents the identifier of the object to touch. If ACTION=execute, this is the XML representation of the action to execute (for instance <action type="set-value" id="kitchen_heating" value="comfort"/>.', metavar='ARG')
-	parser.add_argument('-R', '--regex', action='store_true', help='When used in conjunction with ACTION=read, ARG is interpreted as a regex and used to find objects to read. The pattern must comply with the \'re\' python module.')
-	parser.add_argument('--value-only', action='store_true', help='When used in conjunction with ACTION=read, outputs the value of the queried object but do not prefix it with the object\'s id.')
-	parser.add_argument('--expected-value', help='When used in conjunction with ACTION=read, represents the expected value of the object. This script will exit with a non-zero return code if the value is not the expected one. This is useful when using this script in a "if" test of a shell script.')
-	parser.add_argument('-v', '--verbose', dest='verbosityLevel', help='set verbosity level. Default is "error".', metavar='LEVEL', choices=[l.lower() for l in logger.getLevelsToString()], default='error')
-	args = parser.parse_args()
+	try:
+		options, remainder = getopt.getopt(sys.argv[1:], 'r:w:h:p:v:R:', ['read=', 'write=', 'regex=', 'host=', 'port=','verbose=','help'])
+	except getopt.GetoptError as err:
+		logger.reportError(sys.exc_info()[1])
+		sys.exit(2)
 
-	# Configure logger.
-	logger.initLogger(None, args.verbosityLevel.upper())
+	print('*******************')
+	print('DEPRECATION NOTICE:')
+	print('*******************')
+	print('This script is now deprecated and its functionalities have been split into the two scripts pyknxread.py and pyknxwrite.py. An additional script named pyknxexecute.py allows for executing actions (which functionality is not handled by pyknxclient.py at all).')
 
-	if args.action != 'read' and args.regex:
-		raise Exception('Regular expression can be used with ACTION=read only.')
+	# Parse command line arguments.
+	reads = False
+	writes = False
+	objectIds = []
+	isRegex = False
+	host = 'localhost'
+	port = 1028
+	verbosity = logging.WARNING
+	for option, value in options:
+		if option == '-r' or option == '--read':
+			reads = True
+			objectIds.append(value)
+		elif option == '-R' or option == '--regex':
+			reads = True
+			objectIds.append(value)
+			isRegex = True
+		elif option == '-w' or option == '--write':
+			writes = True
+			objectIds.append(value)
+		elif option == '-h' or option == '--host':
+			host = value
+		elif option == '-p' or option == '--port':
+			port = value
+		elif option == '-v' or option == '--verbose':
+			verbosity = logger.parseLevel(value)
+		elif option == '--help':
+			printUsage()
+			sys.exit(1)
+		else:
+			print('Unrecognized option ' + option)
+			sys.exit(2)
+
+	logger.initLogger(None, verbosity, usesDetailedLogging=False)
+
+	if reads == writes:
+		logger.reportError('Expecting -r|--read or -w|--write and not both.')
+		sys.exit(2)
+
+	if writes and len(objectIds) > 1:
+		logger.reportError('Can only write one object.')
+		sys.exit(2)
+
+	valueToWrite = None
+	if writes:
+		if not remainder:
+			print('No value specified.')
+			printUsage()
+			sys.exit(3)
+		valueToWrite = remainder[0]
+		del remainder[0]
+
+	if remainder:
+		logger.reportError('Too many arguments: ' + str(remainder))
+		sys.exit(4)
 
 	# Start linknx.
-	linknx = Linknx(args.host, int(args.port))
+	linknx = Linknx(host, int(port))
 	try:
-		if args.action == 'read':
-			report = {}
-			if not args.regex:
-				report[args.argument] = linknx.getObject(args.argument).value
+		if reads:
+			report={}
+			if not isRegex:
+				for objId in objectIds:
+					report[objId] = linknx.getObject(objId).value
 			else:
-				for obj in linknx.getObjects(args.argument):
+				for obj in linknx.getObjects(objectIds[0]):
 					report[obj.id] = obj.value
 
 			# No object.
@@ -74,33 +153,18 @@ if __name__ == '__main__':
 
 			# Count tabs to align columns.
 			longestId = max([len(id) for id in report.keys()])
-			succeeds = True
-			for o, v in report.items():
+			for o, v in report.iteritems():
 				spaceCount = longestId - len(o)
 				spaces=''
 				while spaceCount > 0:
 					spaces+=' '
 					spaceCount -= 1
-				if args.value_only:
-					print('{0}'.format(v))
-				else:
-					print('{0} {2} {1}'.format(o, v, spaces))
-
-				if args.expected_value != None:
-					obj = linknx.getObject(o)
-					convertedExpectedValue = obj.convertValueToString(args.expected_value)
-					convertedObjectValue = obj.convertValueToString(v)
-					succeeds = succeeds and convertedExpectedValue == convertedObjectValue
-
-			if not succeeds: exit(100)
-
-		elif args.action == 'write':
-			linknx.getObject(args.argument).value = valueToWrite
-		elif args.action == 'execute':
-			linknx.executeAction(args.argument)
-		else:
-			raise Exception('Unsupported action {0}'.format(args.action))
-
+				print('{0} {2} {1}'.format(o, v, spaces))
+		elif writes:
+			linknx.getObject(objectIds[0]).value = valueToWrite
 	except Exception as e:
-		logger.reportError(sys.exc_info()[1])
+		if verbosity == logging.DEBUG:
+			logger.reportException()
+		else:
+			logger.reportError(sys.exc_info()[1])
 		sys.exit(3)

@@ -1,0 +1,28 @@
+usage: pyknxread.py [-h] [-s HOST] [-p PORT] [-R] [--value-only]
+                    [--expected-value EXPECTED_VALUE] [-v LEVEL]
+                    ID [ID ...]
+
+Lightweight command line client for linknx. It is aimed at reading object
+values from linknx.
+
+positional arguments:
+  ID                    ID represents the identifier of the object to read.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s HOST, --server HOST
+                        Hostname of the machine running the linknx daemon.
+                        Default is localhost.
+  -p PORT, --port PORT  Port linknx listens on. Default is 1028.
+  -R, --regex           ID in the "object" argument is interpreted as a regex
+                        and used to find objects to read. The pattern must
+                        comply with the 're' python module.
+  --value-only          Output the value of the queried object but do not
+                        prefix it with the object's id.
+  --expected-value EXPECTED_VALUE
+                        Expected value of the object. This script will exit
+                        with a non-zero return code if the value is not the
+                        expected one. This is useful when using this script in
+                        a "if" test of a shell script.
+  -v LEVEL, --verbose LEVEL
+                        Set verbosity level. Default is "error".
