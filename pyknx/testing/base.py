@@ -80,21 +80,23 @@ class TestCaseBase(unittest.TestCase):
 	def getCurrentTestName(self):
 		tb = traceback.extract_stack()
 		for file, lineNum, function, source in reversed(tb):
+			print(function)
 			if function.startswith('test'):
 				return function
 
 		raise Exception('No test function could be found.')
 
-	def getResourceFullName(self, resourceSuffix):
-		return self._getFileFullName('resources', resourceSuffix)
+	def getResourceFullName(self, resourceSuffix, appendsTestName=True):
+		return self._getFileFullName('resources', resourceSuffix, appendsTestName)
 
-	def getOutputFullName(self, outputSuffix):
-		return self._getFileFullName('test_files', outputSuffix)
+	def getOutputFullName(self, outputSuffix, appendsTestName=True):
+		return self._getFileFullName('test_files', outputSuffix, appendsTestName)
 
-	def _getFileFullName(self, directory, suffix):
-		currentTest = self.getCurrentTestName()
-		suffix = '.{0}'.format(suffix) if suffix != None else ''
-		resourceFile = '{testClass}.{test}{suffix}'.format(testClass=self.__class__.__name__, test=currentTest, suffix=suffix)
+	def _getFileFullName(self, directory, suffix, appendsTestName=True):
+		prefix = self.getCurrentTestName() if appendsTestName else ''
+		suffix = '{0}'.format(suffix) if suffix != None else ''
+		separator = '.' if prefix and suffix else ''
+		resourceFile = '{testClass}.{prefix}{sep}{suffix}'.format(testClass=self.__class__.__name__, prefix=prefix, suffix=suffix, sep=separator)
 		moduleFile = importlib.import_module(self.__class__.__module__).__file__
 		return os.path.join(os.path.dirname(moduleFile), directory, resourceFile)
 

@@ -153,7 +153,7 @@ if __name__ == '__main__':
 
 			# Count tabs to align columns.
 			longestId = max([len(id) for id in report.keys()])
-			for o, v in report.iteritems():
+			for o, v in report.items():
 				spaceCount = longestId - len(o)
 				spaces=''
 				while spaceCount > 0:
