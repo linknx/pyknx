@@ -189,3 +189,7 @@ Reworked standalone scripts (pyknxconf, pyknxclient=>(pyknxread, pyknxwrite, pyk
 - for instance, pyknxread can now read several object at once
 - replaced argument parsing previously done with getopt by argparse that appears to be more efficient.
 These breaking changes cause backward incompatibility for clients of these scripts. Please refer to the documentation of these script to learn more about their updated usage.
+
+2.0.0b8
+-------
+Fixed an issue in the deprecated pyknxclient.py which was not working anymore with -R option.
