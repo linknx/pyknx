@@ -80,7 +80,6 @@ class TestCaseBase(unittest.TestCase):
 	def getCurrentTestName(self):
 		tb = traceback.extract_stack()
 		for file, lineNum, function, source in reversed(tb):
-			print(function)
 			if function.startswith('test'):
 				return function
 
