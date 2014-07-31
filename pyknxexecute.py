@@ -28,4 +28,4 @@ Example of a valid action: <action type="set-value" id="kitchen_heating" value="
 from pyknx import client
 
 if __name__ == '__main__':
-	client.handleRequest('execute', __doc__)
+    client.handleRequest('execute', __doc__)

@@ -36,33 +36,33 @@ from pyknx.linknx import *
 from pyknx.communicator import *
 
 def parseAddress(addrStr, option):
-	ix = addrStr.find(':')
-	if ix < 0:
-		raise Exception('Malformed value for ' + option +'. Expecting a tuple (hostname:port)')
-	return (addrStr[0:ix], int(addrStr[ix + 1:]))
+    ix = addrStr.find(':')
+    if ix < 0:
+        raise Exception('Malformed value for ' + option +'. Expecting a tuple (hostname:port)')
+    return (addrStr[0:ix], int(addrStr[ix + 1:]))
 
 def makeArgumentParser(description):
-	parser = argparse.ArgumentParser(description=description)
-	parser.add_argument('-c', '--comm-addr', dest='communicatorAddress', help='Address of the communicator. This argument must specify the hostname or the ip address followed by a colon and the port to listen on. Default is "localhost:1029"', default='localhost:1029')
-	parser.add_argument('-l', '--linknx-addr', dest='linknxAddress', help='Address of the linknx server to bind to. This argument must specify the hostname or the ip address followed by a colon and the port. Default is "localhost:1028"', default='localhost:1028')
-	parser.add_argument('userFile', help='use FILE as the user python script that implements callbacks functions declared in the linknx configuration (see the pyknxcallback attributes in XML).', metavar='FILE')
-	parser.add_argument('--log-file', dest='logFile', help='write communicator\'s output to FILE rather than to standard output.', metavar='FILE', default=None)
-	parser.add_argument('-v', '--verbose', dest='verbosityLevel', help='set verbosity level. Default is "error".', metavar='LEVEL', choices=[l.lower() for l in logger.getLevelsToString()], default='error')
-	return parser
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('-c', '--comm-addr', dest='communicatorAddress', help='Address of the communicator. This argument must specify the hostname or the ip address followed by a colon and the port to listen on. Default is "localhost:1029"', default='localhost:1029')
+    parser.add_argument('-l', '--linknx-addr', dest='linknxAddress', help='Address of the linknx server to bind to. This argument must specify the hostname or the ip address followed by a colon and the port. Default is "localhost:1028"', default='localhost:1028')
+    parser.add_argument('userFile', help='use FILE as the user python script that implements callbacks functions declared in the linknx configuration (see the pyknxcallback attributes in XML).', metavar='FILE')
+    parser.add_argument('--log-file', dest='logFile', help='write communicator\'s output to FILE rather than to standard output.', metavar='FILE', default=None)
+    parser.add_argument('-v', '--verbose', dest='verbosityLevel', help='set verbosity level. Default is "error".', metavar='LEVEL', choices=[l.lower() for l in logger.getLevelsToString()], default='error')
+    return parser
 
 if __name__ == '__main__':
-	parser = makeArgumentParser(__doc__)
-	args = parser.parse_args()
+    parser = makeArgumentParser(__doc__)
+    args = parser.parse_args()
 
-	# Configure logger.
-	logger.initLogger(None, args.verbosityLevel.upper())
+    # Configure logger.
+    logger.initLogger(None, args.verbosityLevel.upper())
 
-	args.communicatorAddress = parseAddress(args.communicatorAddress, 'communicator address')
+    args.communicatorAddress = parseAddress(args.communicatorAddress, 'communicator address')
 
-	try:
-		Communicator.runAndWait(args.linknxAddress, args.userFile, args.communicatorAddress, logFile=args.logFile)
-	except SystemExit:
-		# This is a normal exit.
-		pass
-	except:
-		logger.reportException()
+    try:
+        Communicator.runAndWait(args.linknxAddress, args.userFile, args.communicatorAddress, logFile=args.logFile)
+    except SystemExit:
+        # This is a normal exit.
+        pass
+    except:
+        logger.reportException()

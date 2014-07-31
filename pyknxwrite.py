@@ -27,4 +27,4 @@ Lightweight command line client for linknx. It is aimed at writing object values
 from pyknx import client
 
 if __name__ == '__main__':
-	client.handleRequest('write', __doc__)
+    client.handleRequest('write', __doc__)

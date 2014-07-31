@@ -24,19 +24,19 @@ from distutils.core import setup
 import sys
 
 if sys.version_info.major < 3:
-	print('This package is compatible with Python 3 and above.')
-	exit(4)
+    print('This package is compatible with Python 3 and above.')
+    exit(4)
 
-setup(	name='pyknx',
-		version='2.0.0b8',
-		description='Python bindings for Linknx',
-		long_description=''.join(open('README.md').readlines()),
-		author='Cyrille Defranoux',
-		author_email='knx@aminate.net',
-		maintainer='Cyrille Defranoux',
-		maintainer_email='knx@aminate.net',
-		license='GNU Public General License',
-		url='https://github.com/2franix/pyknx/',
-		packages=['pyknx'],
-		data_files=[('.', ['README.md'])],
-		scripts=['pyknxcommunicator.py', 'pyknxcall.py', 'pyknxread.py', 'pyknxwrite.py', 'pyknxexecute.py', 'pyknxclient.py', 'pyknxconf.py'])
+setup(name='pyknx',
+      version='2.0.0b8',
+      description='Python bindings for Linknx',
+      long_description=''.join(open('README.md').readlines()),
+      author='Cyrille Defranoux',
+      author_email='knx@aminate.net',
+      maintainer='Cyrille Defranoux',
+      maintainer_email='knx@aminate.net',
+      license='GNU Public General License',
+      url='https://github.com/2franix/pyknx/',
+      packages=['pyknx'],
+      data_files=[('.', ['README.md'])],
+      scripts=['pyknxcommunicator.py', 'pyknxcall.py', 'pyknxread.py', 'pyknxwrite.py', 'pyknxexecute.py', 'pyknxclient.py', 'pyknxconf.py'])

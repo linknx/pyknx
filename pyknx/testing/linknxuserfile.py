@@ -21,10 +21,10 @@
 # knx at aminate dot net
 
 def onBooleanChanged(context):
-	pass
+    pass
 
 def onByteChanged(context):
-	pass
+    pass
 
 def onFloatChanged(context):
-	pass
+    pass

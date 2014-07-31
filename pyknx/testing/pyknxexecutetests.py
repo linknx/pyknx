@@ -38,23 +38,23 @@ import pwd, grp
 import shutil
 
 class PyknxExecuteTestCase(pyknx.testing.base.WithLinknxTestCase):
-	def setUp(self):
-		pyknx.testing.base.WithLinknxTestCase.setUp(self)
-		self.pyknxExecutePyFile = os.path.join(self.pyknxScriptsDirectory, 'pyknxexecute.py')
+    def setUp(self):
+        pyknx.testing.base.WithLinknxTestCase.setUp(self)
+        self.pyknxExecutePyFile = os.path.join(self.pyknxScriptsDirectory, 'pyknxexecute.py')
 
-	def testHelp(self):
-		self.assertShellCommand([self.pyknxExecutePyFile, '-h'], self.getResourceFullName('out'))
+    def testHelp(self):
+        self.assertShellCommand([self.pyknxExecutePyFile, '-h'], self.getResourceFullName('out'))
 
-	def testExecute(self):
-		object = self.linknx.getObject('Boolean')
-		initialBoolValue = object.value
+    def testExecute(self):
+        object = self.linknx.getObject('Boolean')
+        initialBoolValue = object.value
 
-		newValue = initialBoolValue
-		for i in range(2):
-			newValue = not newValue
-			actionXML = '<action type="set-value" id="{id}" value="{value}"/>'.format(id=object.id, value='on' if newValue else 'off')
-			self.assertShellCommand([self.pyknxExecutePyFile, '-v', 'error', '-s', self.linknx.address[0], '-p', str(self.linknx.address[1]), '--action', actionXML])
-			self.assertEqual(object.value, newValue)
+        newValue = initialBoolValue
+        for i in range(2):
+            newValue = not newValue
+            actionXML = '<action type="set-value" id="{id}" value="{value}"/>'.format(id=object.id, value='on' if newValue else 'off')
+            self.assertShellCommand([self.pyknxExecutePyFile, '-v', 'error', '-s', self.linknx.address[0], '-p', str(self.linknx.address[1]), '--action', actionXML])
+            self.assertEqual(object.value, newValue)
 
 if __name__ == '__main__':
-	unittest.main()
+    unittest.main()

@@ -38,22 +38,22 @@ import pwd, grp
 import shutil
 
 class PyknxWriteTestCase(pyknx.testing.base.WithLinknxTestCase):
-	def setUp(self):
-		pyknx.testing.base.WithLinknxTestCase.setUp(self)
-		self.pyknxWritePyFile = os.path.join(self.pyknxScriptsDirectory, 'pyknxwrite.py')
+    def setUp(self):
+        pyknx.testing.base.WithLinknxTestCase.setUp(self)
+        self.pyknxWritePyFile = os.path.join(self.pyknxScriptsDirectory, 'pyknxwrite.py')
 
-	def testHelp(self):
-		self.assertShellCommand([self.pyknxWritePyFile, '-h'], self.getResourceFullName('out'))
+    def testHelp(self):
+        self.assertShellCommand([self.pyknxWritePyFile, '-h'], self.getResourceFullName('out'))
 
-	def testWrite(self):
-		object = self.linknx.getObject('Boolean')
-		initialBoolValue = object.value
+    def testWrite(self):
+        object = self.linknx.getObject('Boolean')
+        initialBoolValue = object.value
 
-		newValue = initialBoolValue
-		for i in range(2):
-			newValue = not newValue
-			self.assertShellCommand([self.pyknxWritePyFile, '-v', 'error', '-s', self.linknx.address[0], '-p', str(self.linknx.address[1]), 'Boolean', str(newValue)])
-			self.assertEqual(object.value, newValue)
+        newValue = initialBoolValue
+        for i in range(2):
+            newValue = not newValue
+            self.assertShellCommand([self.pyknxWritePyFile, '-v', 'error', '-s', self.linknx.address[0], '-p', str(self.linknx.address[1]), 'Boolean', str(newValue)])
+            self.assertEqual(object.value, newValue)
 
 if __name__ == '__main__':
-	unittest.main()
+    unittest.main()

@@ -27,4 +27,4 @@ Lightweight command line client for linknx. It is aimed at reading object values
 from pyknx import client
 
 if __name__ == '__main__':
-	client.handleRequest('read', __doc__)
+    client.handleRequest('read', __doc__)
