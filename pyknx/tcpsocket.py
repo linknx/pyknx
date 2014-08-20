@@ -94,10 +94,22 @@ class Socket:
         endSequence: bytes object that represents the end sequence when sending/receiving data to/from the socket.
         """
         self._socket.sendall(data + endSequence)
+        self._socket.settimeout(70)
+        answer = self.waitForAnswer(endSequence)
+        return answer
+
+    def waitForStringAnswer(self, encoding = 'utf8', endChar = chr(4)):
+        # Send that over socket.
+        responseBytes = self.waitForAnswer(endChar.encode(encoding))
+
+        # Decode the response string from raw bytes.
+        return responseBytes.decode(encoding)
+
+    def waitForAnswer(self, endSequence):
         answer = b''
-        self._socket.settimeout(60)
         while True:
             chunk = self._socket.recv(4096)
+            logger.reportDebug('Socket {1} New chunk: {0}'.format(chunk, id(self)))
             answer += chunk
             if not chunk or chunk[len(chunk)-len(endSequence):] == endSequence:
                 break

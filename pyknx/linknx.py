@@ -90,7 +90,7 @@ class Linknx:
         """
 
         if self._config is None:
-            xmlConfig = self.sendMessage("<read><config></config></read>").getElementsByTagName('read')[0]
+            xmlConfig = self.sendMessage("<read><config></config></read>", 'read').getElementsByTagName('read')[0]
             self._config = xmlConfig.getElementsByTagName('config')[0]
 
         return self._config
@@ -118,13 +118,7 @@ class Linknx:
             raise Exception('Unsupported action details: must be a minidom XML document or element or an XML string.')
 
         # Build XML document to send to linknx.
-        answerDom = self.sendMessage('<execute>{action}</execute>'.format(action=actionXML))
-
-        execNodes = answerDom.getElementsByTagName("execute")
-        status = execNodes[0].getAttribute("status")
-        valueStr = None
-        if status != "success":
-            raise Exception(self._getErrorFromXML(execNodes[0]))
+        answerDom = self.sendMessage('<execute>{action}</execute>'.format(action=actionXML), 'execute')
 
     def waitForRemoteConnectionReady(self):
         """
@@ -182,7 +176,7 @@ class Linknx:
                 errorMessage += child.data
         return errorMessage
 
-    def sendMessage(self, message):
+    def sendMessage(self, message, commandName):
         """
         Sends an XML message to Linknx.
 
@@ -198,8 +192,20 @@ class Linknx:
             s.connect((self._host, self._port))
             logger.reportDebug('Message sent to linknx: ' + messageWithEncodingHeader)
             answer = s.sendString(messageWithEncodingHeader, encoding='utf8')
-            logger.reportDebug('Linknx answered ' + answer)
-            return parseString(answer[0:answer.rfind(chr(4))])
+            while(True):
+                logger.reportDebug('Linknx answered ' + answer)
+                answerDom = parseString(answer[0:answer.rfind(chr(4))])
+                execNodes = answerDom.getElementsByTagName(commandName)
+                status = execNodes[0].getAttribute("status")
+                logger.reportDebug('Linknx Answer Status = {0}'.format(status))
+                if status == "ongoing":
+                    # Wait for the final status.
+                    answer = s.waitForStringAnswer()
+                    logger.reportDebug('New answer is {0}'.format(answer))
+                elif status != "success":
+                    raise Exception(self._getErrorFromXML(execNodes[0]))
+                else:
+                    return answerDom
         finally:
             s.close()
 
@@ -297,22 +303,18 @@ class Object(object):
         """ Read object's value from linknx. """
         message='<read><objects><object id="' + self._id + '"/></objects></read>'
 
-        answerDom = self._linknx.sendMessage(message)
+        answerDom = self._linknx.sendMessage(message, 'read')
 
         readNodes = answerDom.getElementsByTagName("read")
-        status = readNodes[0].getAttribute("status")
         valueStr = None
-        if status == "success":
-            objectValues = {}
-            objectsNodes = readNodes[0].getElementsByTagName("objects")
-            objectNodes = objectsNodes[0].getElementsByTagName("object")
-            for objectNode in objectNodes:
-                objectId = objectNode.getAttribute("id")
-                objectValue = objectNode.getAttribute("value")
-                objectValues[objectId] = objectValue
-            valueStr = objectValues[self._id]
-        else:
-            raise Exception(self._linknx._getErrorFromXML(readNodes[0]))
+        objectValues = {}
+        objectsNodes = readNodes[0].getElementsByTagName("objects")
+        objectNodes = objectsNodes[0].getElementsByTagName("object")
+        for objectNode in objectNodes:
+            objectId = objectNode.getAttribute("id")
+            objectValue = objectNode.getAttribute("value")
+            objectValues[objectId] = objectValue
+        valueStr = objectValues[self._id]
 
         if self._objectConfig.typeCategory == 'bool':
             return valueStr in ['on', '1']
@@ -363,11 +365,7 @@ class Object(object):
         objectNode = messageDom.getElementsByTagName('object')[0]
         objectNode.setAttribute('id', self._id)
         objectNode.setAttribute('value', objectValue)
-        answerDom = self._linknx.sendMessage(messageDom.toxml())
-        writeNodes = answerDom.getElementsByTagName("write")
-        status = writeNodes[0].getAttribute("status")
-        if status != "success":
-            raise Exception(self._linknx._getErrorFromXML(writeNodes[0]))
+        answerDom = self._linknx.sendMessage(messageDom.toxml(), 'write')
 
     def __repr__(self):
         return self.id
