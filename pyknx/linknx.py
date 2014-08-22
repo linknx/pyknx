@@ -29,6 +29,53 @@ from threading import *
 from pyknx import tcpsocket, logger
 
 class Linknx:
+    class SendMessageThread(Thread):
+        def __init__(self, message, commandName, linknx):
+            Thread.__init__(self, name='SendMessageThread (id={0})'.format(id(self)))
+            self.socket = tcpsocket.Socket()
+            self.linknx = linknx
+            self.messageWithEncodingHeader = '<?xml version="1.0" encoding="utf-8"?>' + message
+            self.commandName = commandName
+            self.finalStatus = None
+            self.answerDom = None
+            self.error = None
+
+        def run(self):
+            try:
+                self.socket.connect((self.linknx.host, self.linknx.port))
+                logger.reportDebug('Message sent to linknx: ' + self.messageWithEncodingHeader)
+                answer = self.socket.sendString(self.messageWithEncodingHeader, encoding='utf8')
+                while True:
+                    logger.reportDebug('Linknx answered ' + answer)
+                    answerDom = parseString(answer[0:answer.rfind(chr(4))])
+                    execNodes = answerDom.getElementsByTagName(self.commandName)
+                    status = execNodes[0].getAttribute("status")
+                    logger.reportDebug('Linknx Answer Status = {0}'.format(status))
+                    if status == "ongoing":
+                        # Wait for the final status.
+                        answer = self.socket.waitForStringAnswer()
+                        logger.reportDebug('New answer is {0}'.format(answer))
+                    else:
+                        if status != "success":
+                            self.error = _getErrorFromXML(execNodes[0])
+                            logger.reportError(error)
+                        self.finalStatus = status
+                        self.answerDom = answerDom
+                        break
+            finally:
+                self.socket.close()
+                logger.reportDebug('Thread is now stopped.')
+
+        @property
+        def isFinalized(self):
+            return self.finalStatus != None
+
+        def _getErrorFromXML(self, answer):
+            errorMessage = ""
+            for child in answer.childNodes:
+                if child.nodeType == child.TEXT_NODE:
+                    errorMessage += child.data
+            return errorMessage
 
     """
     The wrapper of an instance of Linknx.
@@ -118,7 +165,8 @@ class Linknx:
             raise Exception('Unsupported action details: must be a minidom XML document or element or an XML string.')
 
         # Build XML document to send to linknx.
-        answerDom = self.sendMessage('<execute>{action}</execute>'.format(action=actionXML), 'execute')
+        self.sendMessage('<execute>{action}</execute>'.format(action=actionXML), 'execute', waitsForAnswer=False)
+        logger.reportDebug('Action execution has been sent to linknx.')
 
     def waitForRemoteConnectionReady(self):
         """
@@ -169,45 +217,46 @@ class Linknx:
             objects.append(self.getObject(id))
         return objects
 
-    def _getErrorFromXML(self, answer):
-        errorMessage = ""
-        for child in answer.childNodes:
-            if child.nodeType == child.TEXT_NODE:
-                errorMessage += child.data
-        return errorMessage
-
-    def sendMessage(self, message, commandName):
+    def sendMessage(self, message, commandName, waitsForAnswer=True):
         """
         Sends an XML message to Linknx.
 
         This function is implemented mainly for internal purposes. The end user is unlikely to call it directly.
         message -- An XML request that follows Linknx XML protocol.
-        Returns an XML document that corresponds to Linknx answer.
+        commandName -- The name of the XML command that is sent.
+        waitsForAnswer -- If True, this method blocks until linknx has sent its final status. Otherwise, the method returns immediately. Linknx's answer would then be logged when it arrives.
+        Returns an XML document that corresponds to Linknx answer if waitsForAnswer is False, None otherwise.
 
         """
         # logger.reportDebug('Sending message to linknx: ' + message)
-        s = tcpsocket.Socket()
-        messageWithEncodingHeader = '<?xml version="1.0" encoding="utf-8"?>' + message
-        try:
-            s.connect((self._host, self._port))
-            logger.reportDebug('Message sent to linknx: ' + messageWithEncodingHeader)
-            answer = s.sendString(messageWithEncodingHeader, encoding='utf8')
-            while(True):
-                logger.reportDebug('Linknx answered ' + answer)
-                answerDom = parseString(answer[0:answer.rfind(chr(4))])
-                execNodes = answerDom.getElementsByTagName(commandName)
-                status = execNodes[0].getAttribute("status")
-                logger.reportDebug('Linknx Answer Status = {0}'.format(status))
-                if status == "ongoing":
-                    # Wait for the final status.
-                    answer = s.waitForStringAnswer()
-                    logger.reportDebug('New answer is {0}'.format(answer))
-                elif status != "success":
-                    raise Exception(self._getErrorFromXML(execNodes[0]))
-                else:
-                    return answerDom
-        finally:
-            s.close()
+        messagingThread = Linknx.SendMessageThread(message, commandName, self)
+
+        if waitsForAnswer:
+            # CAUTION - PERFORMANCE WARNING
+            # Call run() directly to avoid starting Thread. That will let the
+            # current thread naturally block until run() returns with linknx's answer.
+            # Otherwise, we would have to wait for SendMessageThread completion
+            # in an infinite while loop with a harcoded sleep time at the end of
+            # each iteration. A sleep time of 0.1s is too long in most cases (it
+            # significantly slows down the overall request time) and a sleep
+            # time of, say, 0.01 may still be too long in some cases. Client
+            # expects our method to return as soon as possible.
+            # Thread's work implementation may have been extracted into another
+            # object to make things cleaner but reusing the Thread object is
+            # quite straightforward.
+            messagingThread.run()
+
+            if messagingThread.finalStatus != 'success':
+                raise Exception(messagingThread.error)
+
+            return messagingThread.answerDom
+        else:
+            # Start thread and leave.
+            # Do not care about final status here. Error would be logged by
+            # messaging thread. Client does not want to wait for answer so not
+            # notifying the error with an exception makes sense.
+            messagingThread.start()
+            return None
 
 class ObjectConfig:
     def __init__(self, configNode):
