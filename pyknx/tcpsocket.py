@@ -109,7 +109,6 @@ class Socket:
         answer = b''
         while True:
             chunk = self._socket.recv(4096)
-            logger.reportDebug('Socket {1} New chunk: {0}'.format(chunk, id(self)))
             answer += chunk
             if not chunk or chunk[len(chunk)-len(endSequence):] == endSequence:
                 break
