@@ -193,3 +193,10 @@ These breaking changes cause backward incompatibility for clients of these scrip
 2.0.0b8
 -------
 Fixed an issue in the deprecated pyknxclient.py which was not working anymore with -R option.
+
+2.0.0b9
+-------
+Fixed two issues related to executing actions with <execute/> requests:
+- if the action is not trivial, linknx may need some time to complete it. In that case, it returns an intermediary status that is "ongoing", which was not expected by pyknx. That was leading to erroneous "failed" actions.
+- because actions can take some time (if it is not trivial, linknx will not return before 1s), a need for asynchronous message arose. This functionality has been implemented and executeAction now returns immediately, without waiting for action's completion.
+
