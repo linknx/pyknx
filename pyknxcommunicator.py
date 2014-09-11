@@ -47,6 +47,8 @@ def makeArgumentParser(description):
     parser.add_argument('-l', '--linknx-addr', dest='linknxAddress', help='Address of the linknx server to bind to. This argument must specify the hostname or the ip address followed by a colon and the port. Default is "localhost:1028"', default='localhost:1028')
     parser.add_argument('userFile', help='use FILE as the user python script that implements callbacks functions declared in the linknx configuration (see the pyknxcallback attributes in XML).', metavar='FILE')
     parser.add_argument('--log-file', dest='logFile', help='write communicator\'s output to FILE rather than to standard output.', metavar='FILE', default=None)
+    parser.add_argument('-d', '--daemonize', help='ask daemon to detach and run as a background daemon.', action='store_true', default=False)
+    parser.add_argument('--pid-file', dest='pidFile', help='writes the PID of the daemon process to PIDFILE.', metavar='PIDFILE')
     parser.add_argument('-v', '--verbose', dest='verbosityLevel', help='set verbosity level. Default is "error".', metavar='LEVEL', choices=[l.lower() for l in logger.getLevelsToString()], default='error')
     return parser
 
@@ -60,7 +62,7 @@ if __name__ == '__main__':
     args.communicatorAddress = parseAddress(args.communicatorAddress, 'communicator address')
 
     try:
-        Communicator.runAndWait(args.linknxAddress, args.userFile, args.communicatorAddress, logFile=args.logFile)
+        Communicator.run(args.linknxAddress, args.userFile, args.communicatorAddress, logFile=args.logFile, daemonizes=args.daemonize, pidFile=args.pidFile)
     except SystemExit:
         # This is a normal exit.
         pass

@@ -230,7 +230,7 @@ class Communicator:
             return False
 
     @staticmethod
-    def runAndWait(linknxAddress, userFile, communicatorAddress, userScriptArgs=None, verbosityLevel=logging.INFO, logFile=None):
+    def run(linknxAddress, userFile, communicatorAddress, userScriptArgs=None, verbosityLevel=logging.INFO, logFile=None, daemonizes=False, pidFile=None):
         def signal_handler(signal, frame):
             logger.reportInfo('Terminating...')
             communicator.stopListening()
@@ -241,7 +241,29 @@ class Communicator:
         else:
             logger.initLogger(None, verbosityLevel)
 
-        linknx = Linknx(linknxAddress[0], linknxAddress[1])
+        if isinstance(linknxAddress, tuple):
+            linknxAddr = (linknxAddress[0], int(linknxAddress[1]))
+        elif isinstance(linknxAddress, str):
+            tokens = linknxAddress.split(':')
+            linknxAddr = (tokens[0], int(tokens[1]))
+        else:
+                raise Exception('Unrecognized linknx address format.')
+        linknx = Linknx(linknxAddr[0], int(linknxAddr[1]))
+
+        # Fork if requested.
+        if daemonizes:
+            pid = os.fork()
+        else:
+            pid = os.getpid()
+
+        if pid != 0 and pidFile != None:
+            with open(pidFile, 'w') as f:
+                f.write(str(pid))
+
+        # If we are in the parent process (when forking), there is nothing left
+        # to do. The communicator should run in the child process.
+        if pid != 0 and daemonizes:
+            return
 
         # Start communicator.
         communicator = Communicator(linknx, userFile, communicatorAddress, userScriptArgs=userScriptArgs)
@@ -253,6 +275,10 @@ class Communicator:
         # Main loop.
         while communicator.isListening:
             time.sleep(1)
+
+        # Clean pid file.
+        if pidFile != None and os.path.exists(pidFile):
+            os.remove(pidFile)
 
     def startListening(self):
 

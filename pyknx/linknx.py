@@ -366,7 +366,7 @@ class Object(object):
         valueStr = objectValues[self._id]
 
         if self._objectConfig.typeCategory == 'bool':
-            return valueStr in ['on', '1']
+            return valueStr in ['on', '1', 'yes', 'true']
         elif self._objectConfig.typeCategory == 'int':
             return int(valueStr)
         elif self._objectConfig.typeCategory == 'float':
