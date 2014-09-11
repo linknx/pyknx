@@ -1,4 +1,5 @@
 usage: pyknxcommunicator.py [-h] [-c COMMUNICATORADDRESS] [-l LINKNXADDRESS]
-                            [--log-file FILE] [-v LEVEL]
+                            [--log-file FILE] [-d] [--pid-file PIDFILE]
+                            [-v LEVEL]
                             FILE
 pyknxcommunicator.py: error: the following arguments are required: FILE

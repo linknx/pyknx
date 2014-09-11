@@ -1,5 +1,6 @@
 usage: pyknxcommunicator.py [-h] [-c COMMUNICATORADDRESS] [-l LINKNXADDRESS]
-                            [--log-file FILE] [-v LEVEL]
+                            [--log-file FILE] [-d] [--pid-file PIDFILE]
+                            [-v LEVEL]
                             FILE
 
 Starts an instance of the Pyknx communicator daemon. The daemon is aimed at
@@ -27,5 +28,7 @@ optional arguments:
                         by a colon and the port. Default is "localhost:1028"
   --log-file FILE       write communicator's output to FILE rather than to
                         standard output.
+  -d, --daemonize       ask daemon to detach and run as a background daemon.
+  --pid-file PIDFILE    writes the PID of the daemon process to PIDFILE.
   -v LEVEL, --verbose LEVEL
                         set verbosity level. Default is "error".
