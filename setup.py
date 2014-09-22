@@ -29,7 +29,7 @@ if sys.version_info.major < 3:
     exit(4)
 
 setup(name='pyknx',
-      version=pyknx.__version__
+      version=pyknx.__version__,
       description='Python bindings for Linknx',
       long_description=''.join(open('README.md').readlines()),
       author='Cyrille Defranoux',
