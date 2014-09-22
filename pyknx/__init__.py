@@ -29,3 +29,20 @@ logger.py: internal module that provides logging functionality for the package.
 tcpsocket.py: an internal module that implements common functionality related to socket communication. The end-user is unlikely to use this module directly.
 """
 __all__ = ['linknx', 'communicator']
+
+class Version:
+    def __init__(self, major, minor, revision, maturityLevel, maturationStep):
+        if maturityLevel not in ('a', 'b', ''):
+            raise Exception('Unknown maturity level.')
+        self.major = major
+        self.minor = minor
+        self.revision = revision
+        self.maturityLevel = maturityLevel
+        self.maturationStep = maturationStep
+
+    def __repr__(self):
+        return '{major}.{minor}.{revision}{maturityLevel}{maturationStep}'.format(**vars(self))
+
+version = Version(2, 0, 0, 'b', 10)
+__version__=str(version)
+

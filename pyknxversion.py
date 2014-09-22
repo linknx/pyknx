@@ -20,24 +20,24 @@
 # For any question, feature requests or bug reports, feel free to contact me at:
 # knx at aminate dot net
 
-from distutils.core import setup
-import sys
+"""
+Outputs the current version of the Pyknx package.
+"""
+
 import pyknx
+import argparse
+import sys
+import logging
+import os
+from pyknx import logger
 
-if sys.version_info.major < 3:
-    print('This package is compatible with Python 3 and above.')
-    exit(4)
+__doc__ = __doc__.format(scriptname=os.path.basename(__file__))
 
-setup(name='pyknx',
-      version=pyknx.__version__
-      description='Python bindings for Linknx',
-      long_description=''.join(open('README.md').readlines()),
-      author='Cyrille Defranoux',
-      author_email='knx@aminate.net',
-      maintainer='Cyrille Defranoux',
-      maintainer_email='knx@aminate.net',
-      license='GNU Public General License',
-      url='https://github.com/2franix/pyknx/',
-      packages=['pyknx'],
-      data_files=[('.', ['README.md'])],
-      scripts=['pyknxcommunicator.py', 'pyknxcall.py', 'pyknxread.py', 'pyknxwrite.py', 'pyknxexecute.py', 'pyknxclient.py', 'pyknxconf.py', 'pyknxversion.py'])
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description=__doc__)
+    args = parser.parse_args()
+
+    # Configure logger.
+    logger.initLogger(None)
+
+    print(pyknx.version)

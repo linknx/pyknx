@@ -91,13 +91,18 @@ class TestCaseBase(unittest.TestCase):
     def getOutputFullName(self, outputSuffix, appendsTestName=True):
         return self._getFileFullName('test_files', outputSuffix, appendsTestName)
 
+    def getTestDirectory(self):
+        return os.path.dirname(self.getTestFileFullName())
+
+    def getTestFileFullName(self):
+        return importlib.import_module(self.__class__.__module__).__file__
+
     def _getFileFullName(self, directory, suffix, appendsTestName=True):
         prefix = self.getCurrentTestName() if appendsTestName else ''
         suffix = '{0}'.format(suffix) if suffix != None else ''
         separator = '.' if prefix and suffix else ''
         resourceFile = '{testClass}.{prefix}{sep}{suffix}'.format(testClass=self.__class__.__name__, prefix=prefix, suffix=suffix, sep=separator)
-        moduleFile = importlib.import_module(self.__class__.__module__).__file__
-        return os.path.join(os.path.dirname(moduleFile), directory, resourceFile)
+        return os.path.join(self.getTestDirectory(), directory, resourceFile)
 
     def waitDuring(self, duration, reason, assertions=[], assertStartMargin=0, assertEndMargin=0):
         self.assertTrue(duration >= 0, 'Duration is negative, is it intended?')
