@@ -177,7 +177,7 @@ class Linknx:
 
         """
         # Ask for config.
-        logger.reportInfo('Start connecting to linknx.')
+        logger.reportInfo('Start connecting to linknx on {0}.'.format(self.address))
         attemptId = 0
         maxAttemptCount = 10
         while attemptId < maxAttemptCount:

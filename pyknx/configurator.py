@@ -134,7 +134,12 @@ class Configurator:
             ioportsNode = self._getOrAddConfigElement(servicesNode, 'ioports')
             ioportNode = doc.createElement('ioport')
             ioportNode.setAttribute('id', self._communicatorName)
-            ioportNode.setAttribute('host', socket.gethostbyname(self._address[0])) #gethostbyname converts the hostname into an ip. Linknx does not support ioport hostnames.
+            try:
+                hostIP = socket.gethostbyname(self._address[0])
+            except:
+                logger.reportWarning('Could not check that {0} is a valid ip address. Please check the output configuration. Linknx does not support hostnames, it requires IP address.'.format(self._address[0]))
+                hostIP = self._address[0]
+            ioportNode.setAttribute('host', hostIP) #gethostbyname converts the hostname into an ip. Linknx does not support ioport hostnames.
             ioportNode.setAttribute('port', str(self._address[1]))
             ioportNode.setAttribute('type', 'tcp')
             ioportsNode.appendChild(ioportNode)
