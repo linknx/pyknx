@@ -43,6 +43,6 @@ class Version:
     def __repr__(self):
         return '{major}.{minor}.{revision}{maturityLevel}{maturationStep}'.format(**vars(self))
 
-version = Version(2, 0, 0, 'b', 11)
+version = Version(2, 0, 1, 'b', 1)
 __version__=str(version)
 

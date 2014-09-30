@@ -39,6 +39,16 @@ Once installed, you should be able to read or write your Linknx objects from you
 	for lightObj in server.getObjects('Lights.*'): 
 		print '{0} is currently {1}'.format(lightObj.id, lightObj.value)
 
+For better performance, the snippet above can be rewritten like this since version 2.0.1:
+
+	from pyknx import linknx
+	server = linknx.Linknx() # Connect to localhost:1028
+
+	# Print status of all lights. The regex assumes that all lights objects are prefixed with 'Lights'.
+	lightObjects = server.getObjects('Lights.*')
+	for lightObj, value in lightObjects.getValues(): # getValues get all values with a single request to Linknx!
+		print '{0} is currently {1}'.format(lightObj.id, value)
+
 Pyknx allows to execute functions implemented in a python file of your own, with the script running as a daemon. This allows to easily store data from one execution to another.
 The example below demonstrates how one can implement a function that can be called each time an object changes in Linknx::
 
@@ -68,7 +78,7 @@ Then, my requirements evolved drastically as I wanted to implement my own alarm 
 - I had to rely on bash scripts for each non-trivial action executed by Linknx, which led to a bunch of scripts disseminated to various places on my server. Difficult to maintain too... And, no offense, but I have to respectfully admit that bash is not the kind of language I am happy to work with.
 - calling external scripts from within shell-cmd actions has a major drawback: the script's lifetime is equal to the action's one. If the script has to retain some variables between two executions, it has no solution but polluting Linknx objects pool or storing data to files. None of these are convenient for a non-trivial application.
 
-The answer to those problems was to implement a daemon in Python that would manage my alarm system. This time, I would be able to use the comprehensive Python framework, to factorize my code and to test it automatically!
+The answer to those problems was to implement a daemon in Python that manages my alarm system. This alarm system is available as the Homewatcher package: https://pypi.python.org/pypi/homewatcher/
 
 How does it work?
 =================
@@ -200,3 +210,6 @@ Fixed two issues related to executing actions with <execute/> requests:
 - if the action is not trivial, linknx may need some time to complete it. In that case, it returns an intermediary status that is "ongoing", which was not expected by pyknx. That was leading to erroneous "failed" actions.
 - because actions can take some time (if it is not trivial, linknx will not return before 1s), a need for asynchronous message arose. This functionality has been implemented and executeAction now returns immediately, without waiting for action's completion.
 
+2.0.1
+-----
+Added the ability to get values for a collection of objects, rather than calling Object.value for each of them. Working on a collection does perform a single request for all objects.

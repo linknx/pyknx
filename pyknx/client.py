@@ -61,24 +61,20 @@ def handleRequest(requestType, doc):
     linknx = Linknx(args.host, int(args.port))
     try:
         if requestType == 'read':
-            report = {}
-            for objectId in args.objectIds:
-                if not args.regex:
-                    report[objectId] = linknx.getObject(objectId).value
-                else:
-                    for obj in linknx.getObjects(objectId):
-                        report[obj.id] = obj.value
+            objects = linknx.getObjects(objectIds=args.objectIds) if not args.regex else linknx.getObjects(patterns=args.objectIds)
 
             # No object.
-            if not report:
-                logger.reportWarning('No object of given id.')
+            if not objects:
+                logger.reportWarning('No such object.')
                 sys.exit(10)
 
             # Count tabs to align columns.
-            longestId = max([len(id) for id in report.keys()])
+            report = objects.getValues()
+            longestId = max([len(obj.id) for obj in report.keys()])
             succeeds = True
             for o, v in report.items():
-                spaceCount = longestId - len(o)
+                id = o.id
+                spaceCount = longestId - len(id)
                 spaces=''
                 while spaceCount > 0:
                     spaces+=' '
@@ -86,12 +82,11 @@ def handleRequest(requestType, doc):
                 if args.value_only:
                     print('{0}'.format(v))
                 else:
-                    print('{0} {2} {1}'.format(o, v, spaces))
+                    print('{0} {2} {1}'.format(id, v, spaces))
 
                 if args.expected_value != None:
-                    obj = linknx.getObject(o)
-                    convertedExpectedValue = obj.convertValueToString(args.expected_value)
-                    convertedObjectValue = obj.convertValueToString(v)
+                    convertedExpectedValue = o.convertValueToString(args.expected_value)
+                    convertedObjectValue = o.convertValueToString(v)
                     succeeds = succeeds and convertedExpectedValue == convertedObjectValue
 
             if not succeeds: exit(100)
@@ -108,5 +103,5 @@ def handleRequest(requestType, doc):
             raise Exception('Unsupported request type.')
 
     except Exception as e:
-        logger.reportError(sys.exc_info()[1])
+        logger.reportException()
         sys.exit(3)

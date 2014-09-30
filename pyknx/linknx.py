@@ -24,14 +24,15 @@ import sys
 import re
 import getopt
 import time
+import collections
 from xml.dom.minidom import parseString, Document, Element
 from threading import *
 from pyknx import tcpsocket, logger
 
 class Linknx:
     class SendMessageThread(Thread):
-        def __init__(self, message, commandName, linknx):
-            Thread.__init__(self, name='SendMessageThread (id={0})'.format(id(self)))
+        def __init__(self, name, message, commandName, linknx):
+            Thread.__init__(self, name='SendMessageThread {1} (id={0})'.format(id(self), name))
             self.socket = tcpsocket.Socket()
             self.linknx = linknx
             self.messageWithEncodingHeader = '<?xml version="1.0" encoding="utf-8"?>' + message
@@ -50,15 +51,14 @@ class Linknx:
                     answerDom = parseString(answer[0:answer.rfind(chr(4))])
                     execNodes = answerDom.getElementsByTagName(self.commandName)
                     status = execNodes[0].getAttribute("status")
-                    logger.reportDebug('Linknx Answer Status = {0}'.format(status))
                     if status == "ongoing":
                         # Wait for the final status.
                         answer = self.socket.waitForStringAnswer()
                         logger.reportDebug('New answer is {0}'.format(answer))
                     else:
                         if status != "success":
-                            self.error = _getErrorFromXML(execNodes[0])
-                            logger.reportError(error)
+                            self.error = self._getErrorFromXML(execNodes[0])
+                            logger.reportError(self.error)
                         self.finalStatus = status
                         self.answerDom = answerDom
                         break
@@ -137,7 +137,7 @@ class Linknx:
         """
 
         if self._config is None:
-            xmlConfig = self.sendMessage("<read><config></config></read>", 'read').getElementsByTagName('read')[0]
+            xmlConfig = self._sendMessage('Read Config', "<read><config></config></read>", 'read').getElementsByTagName('read')[0]
             self._config = xmlConfig.getElementsByTagName('config')[0]
 
         return self._config
@@ -165,7 +165,7 @@ class Linknx:
             raise Exception('Unsupported action details: must be a minidom XML document or element or an XML string.')
 
         # Build XML document to send to linknx.
-        self.sendMessage('<execute>{action}</execute>'.format(action=actionXML), 'execute', waitsForAnswer=False)
+        self._sendMessage('Execute {0}'.format(actionXML), '<execute>{action}</execute>'.format(action=actionXML), 'execute', waitsForAnswer=False)
         logger.reportDebug('Action execution has been sent to linknx.')
 
     def waitForRemoteConnectionReady(self):
@@ -208,16 +208,35 @@ class Linknx:
             self._objects[id] = obj
         return obj
 
-    def getObjects(self, pattern='.*'):
-        """ Get the objects whose identifiers match the given regex pattern. Default pattern matches all identifiers, thus calling getObjects() returns all objects. """
-        regex = re.compile(pattern)
-        objects = []
-        for id in self.objectConfig.keys():
-            if regex.search(id) is None: continue
-            objects.append(self.getObject(id))
+    def getObjects(self, patterns=None, objectIds=None):
+        """ Get the objects whose identifiers are in the given list or match the given regex pattern. If neither a pattern nor object identifiers are provided, returns all objects. """
+        actualPatterns = patterns if (isinstance(patterns, collections.Iterable) or patterns == None) else (patterns,)
+
+        objects = ObjectCollection(self)
+
+        # Get object by ids.
+        ids = set()
+        if objectIds != None:
+            for id in objectIds:
+                objects.append(self.getObject(id))
+                ids.add(id)
+
+        # Handle regex.
+        if actualPatterns != None:
+            for pattern in actualPatterns:
+                regex = re.compile(pattern)
+                for id in self.objectConfig.keys():
+                    if id in ids: continue
+                    if regex.search(id) is None: continue
+                    objects.append(self.getObject(id))
+                    ids.add(id)
+
+        # Get all objects if no constraint.
+        if actualPatterns == None and objectIds == None:
+            objects.extend([self.getObject(id) for id in self.objectConfig.keys()])
         return objects
 
-    def sendMessage(self, message, commandName, waitsForAnswer=True):
+    def _sendMessage(self, purpose, message, commandName, waitsForAnswer=True):
         """
         Sends an XML message to Linknx.
 
@@ -229,7 +248,7 @@ class Linknx:
 
         """
         # logger.reportDebug('Sending message to linknx: ' + message)
-        messagingThread = Linknx.SendMessageThread(message, commandName, self)
+        messagingThread = Linknx.SendMessageThread(purpose, message, commandName, self)
 
         if waitsForAnswer:
             # CAUTION - PERFORMANCE WARNING
@@ -350,29 +369,8 @@ class Object(object):
     @property
     def value(self):
         """ Read object's value from linknx. """
-        message='<read><objects><object id="' + self._id + '"/></objects></read>'
-
-        answerDom = self._linknx.sendMessage(message, 'read')
-
-        readNodes = answerDom.getElementsByTagName("read")
-        valueStr = None
-        objectValues = {}
-        objectsNodes = readNodes[0].getElementsByTagName("objects")
-        objectNodes = objectsNodes[0].getElementsByTagName("object")
-        for objectNode in objectNodes:
-            objectId = objectNode.getAttribute("id")
-            objectValue = objectNode.getAttribute("value")
-            objectValues[objectId] = objectValue
-        valueStr = objectValues[self._id]
-
-        if self._objectConfig.typeCategory == 'bool':
-            return valueStr in ['on', '1', 'yes', 'true']
-        elif self._objectConfig.typeCategory == 'int':
-            return int(valueStr)
-        elif self._objectConfig.typeCategory == 'float':
-            return float(valueStr)
-        else:
-            return valueStr
+        objects = ObjectCollection(self.linknx, (self,))
+        return objects.getValues()[self]
 
     def convertValueToString(self, objValue):
         if self._objectConfig.typeCategory == 'bool':
@@ -397,6 +395,16 @@ class Object(object):
 
         return objectValue
 
+    def convertStringToValue(self, valueString):
+        if self._objectConfig.typeCategory == 'bool':
+            return valueString in ['on', '1', 'yes', 'true']
+        elif self._objectConfig.typeCategory == 'int':
+            return int(valueString)
+        elif self._objectConfig.typeCategory == 'float':
+            return float(valueString)
+        else:
+            return valueString
+
     @value.setter
     def value(self, objValue):
         """ Write object's value to linknx. """
@@ -414,10 +422,42 @@ class Object(object):
         objectNode = messageDom.getElementsByTagName('object')[0]
         objectNode.setAttribute('id', self._id)
         objectNode.setAttribute('value', objectValue)
-        answerDom = self._linknx.sendMessage(messageDom.toxml(), 'write')
+        answerDom = self._linknx._sendMessage('Write {0}={1}'.format(self.id, objValue), messageDom.toxml(), 'write')
 
     def __repr__(self):
         return self.id
 
     def __str__(self):
         return self.id
+
+class ObjectCollection(list):
+    def __init__(self, linknx, objects=[]):
+        self._linknx = linknx
+        self.extend([o if isinstance(o, Object) else linknx.getObject(o) for o in objects])
+
+    def getValues(self):
+        """ Returns a dictionary with objects as keys and object values as values. """
+        objectRequests = ['<object id="{id}"/>'.format(id=object.id) for object in self]
+        message = '<read><objects>{objects}</objects></read>'.format(objects=''.join(objectRequests))
+
+        answerDom = self._linknx._sendMessage('Read {0}'.format(self), message, 'read')
+
+        # Extract all object values from linknx's answer and store them by
+        # object id.
+        readNodes = answerDom.getElementsByTagName("read")
+        valueStr = None
+        objectValueStringsById = {}
+        objectsNodes = readNodes[0].getElementsByTagName("objects")
+        objectNodes = objectsNodes[0].getElementsByTagName("object")
+        for objectNode in objectNodes:
+            objectId = objectNode.getAttribute("id")
+            objectValueStringsById[objectId] = objectNode.getAttribute("value")
+
+        # Make sure we have a value for each requested object.
+        objectValues = {}
+        for obj in self:
+            if not obj.id in objectValueStringsById:
+                raise Exception("Failed to evaluate object {0}.".format(obj))
+            objectValues[obj] = obj.convertStringToValue(objectValueStringsById[obj.id]) 
+
+        return objectValues
