@@ -370,7 +370,7 @@ class Object(object):
     def value(self):
         """ Read object's value from linknx. """
         objects = ObjectCollection(self.linknx, (self,))
-        return objects.getValues()[self]
+        return objects.getValues()[self.id]
 
     def convertValueToString(self, objValue):
         if self._objectConfig.typeCategory == 'bool':
@@ -436,7 +436,7 @@ class ObjectCollection(list):
         self.extend([o if isinstance(o, Object) else linknx.getObject(o) for o in objects])
 
     def getValues(self):
-        """ Returns a dictionary with objects as keys and object values as values. """
+        """ Returns a dictionary with object identifiers as keys and object values as values. """
         objectRequests = ['<object id="{id}"/>'.format(id=object.id) for object in self]
         message = '<read><objects>{objects}</objects></read>'.format(objects=''.join(objectRequests))
 
@@ -458,6 +458,6 @@ class ObjectCollection(list):
         for obj in self:
             if not obj.id in objectValueStringsById:
                 raise Exception("Failed to evaluate object {0}.".format(obj))
-            objectValues[obj] = obj.convertStringToValue(objectValueStringsById[obj.id]) 
+            objectValues[obj.id] = obj.convertStringToValue(objectValueStringsById[obj.id]) 
 
         return objectValues

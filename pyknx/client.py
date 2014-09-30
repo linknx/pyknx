@@ -70,11 +70,10 @@ def handleRequest(requestType, doc):
 
             # Count tabs to align columns.
             report = objects.getValues()
-            longestId = max([len(obj.id) for obj in report.keys()])
+            longestId = max([len(obj) for obj in report.keys()])
             succeeds = True
             for o, v in report.items():
-                id = o.id
-                spaceCount = longestId - len(id)
+                spaceCount = longestId - len(o)
                 spaces=''
                 while spaceCount > 0:
                     spaces+=' '
@@ -82,11 +81,12 @@ def handleRequest(requestType, doc):
                 if args.value_only:
                     print('{0}'.format(v))
                 else:
-                    print('{0} {2} {1}'.format(id, v, spaces))
+                    print('{0} {2} {1}'.format(o, v, spaces))
 
                 if args.expected_value != None:
-                    convertedExpectedValue = o.convertValueToString(args.expected_value)
-                    convertedObjectValue = o.convertValueToString(v)
+                    obj = linknx.getObject(o)
+                    convertedExpectedValue = obj.convertValueToString(args.expected_value)
+                    convertedObjectValue = obj.convertValueToString(v)
                     succeeds = succeeds and convertedExpectedValue == convertedObjectValue
 
             if not succeeds: exit(100)
