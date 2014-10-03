@@ -22,7 +22,7 @@
 
 import sys
 sys.path.append('../')
-from pyknx import logger, linknx, configurator, communicator
+from pyknx import logger, linknx, configurator, communicator, Version
 from pyknx.testing import base
 import logging
 import os.path

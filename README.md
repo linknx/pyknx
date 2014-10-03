@@ -213,3 +213,7 @@ Fixed two issues related to executing actions with <execute/> requests:
 2.0.1
 -----
 Added the ability to get values for a collection of objects, rather than calling Object.value for each of them. Working on a collection does perform a single request for all objects.
+
+2.1.0
+-----
+Added a version object to the package.
