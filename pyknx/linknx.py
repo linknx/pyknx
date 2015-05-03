@@ -301,6 +301,10 @@ class ObjectConfig:
             self.typeCategory = 'float'
         elif firstTypeDigit in ('4', '16', '28'):
             self.typeCategory = 'string'
+        elif firstTypeDigit == '10':
+            self.typeCategory = 'time'
+        elif firstTypeDigit == '11':
+            self.typeCategory = 'date'
         else:
             logger.reportWarning('Object ' + self.id + ' has an unsupported type ' + self.type)
             self.typeCategory = 'unknown'
@@ -384,11 +388,7 @@ class Object(object):
                     objectValue = 'off'
                 else:
                     raise Exception('For object {1}: Unable to convert {0} to boolean.'.format(objValue, self._id))
-        elif self._objectConfig.typeCategory == 'int':
-            objectValue = str(objValue)
-        elif self._objectConfig.typeCategory == 'float':
-            objectValue = str(objValue)
-        elif self._objectConfig.typeCategory == 'string':
+        elif self._objectConfig.typeCategory in ('int', 'float', 'string', 'date', 'time'):
             objectValue = str(objValue)
         else:
             raise Exception('Unsupported type ' + self._objectConfig.typeCategory)
