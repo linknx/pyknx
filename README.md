@@ -109,6 +109,13 @@ Pyknx relies on the built-in **ioport communication** of Linknx. The principle i
 
 And that's all. Every callback is passed a 'Context' instance that implements an **'object' property** which can be used to identify the object that is the source of the event on Linknx's side. Simply write 'context.object.value' to retrieve or change the value of the object.
 
+Initialize and dispose the user script
+======================================
+The Pyknx communicator automatically calls some user script's callbacks if they are defined:
+- initializeUserScript(context) is called when the communicator is initialized and ready to go
+- finalizeUserScript(context) is called when the communicator is being stopped. At this time, Linknx is still able to raise object change events.
+- endUserScript(context) is called when the communicator has fully stopped and has disconnected from the Linknx instance.
+
 Contents of the package
 =======================
 The archive comes with a package named pyknx that offers the following pure-python modules:
