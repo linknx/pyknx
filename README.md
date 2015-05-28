@@ -9,6 +9,7 @@ Copyright (C) 2012-2014 Cyrille Defranoux
 
 Contact me at knx at aminate dot net
 
+For the documentation about how to use Pyknx, please see the wiki on [Github!](https://github.com/2franix/pyknx)
 ----------------------------------------------------------------------
 
 Python Version Requirement
@@ -219,3 +220,7 @@ Added the ability to get values for a collection of objects, rather than calling
 2.1.0
 -----
 Added a version object to the package.
+
+2.1.2
+-----
+Fixed some issues with the markdown README.
