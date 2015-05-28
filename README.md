@@ -9,8 +9,6 @@ Copyright (C) 2012-2014 Cyrille Defranoux
 
 Contact me at knx at aminate dot net
 
-Get the source code on Github https://github.com/2franix/pyknx
-
 ----------------------------------------------------------------------
 
 Python Version Requirement
@@ -62,7 +60,7 @@ The example below demonstrates how one can implement a function that can be call
 
 		print('Lights {0} have been switched {1} times.'.format(context.objectId, counter[context.objectId])
 
-Refer to section How does it work? to know how to configure your environment to make such magic happen. 
+Refer to section [How does it work?](https://github.com/2franix/pyknx#how-does-it-work) to know how to configure your environment to make such magic happen. 
 
 Why Pyknx?
 ==========
@@ -84,25 +82,29 @@ How does it work?
 =================
 Pyknx relies on the built-in **ioport communication** of Linknx. The principle is as following:
 
-- edit your linknx XML configuration to **add a pyknxcallback attribute** to each object for which you would like a python callback to be called whenever its value changes. The value of the attribute corresponds to the name of the function to call::
+- edit your linknx XML configuration to **add a pyknxcallback attribute** to each object for which you would like a python callback to be called whenever its value changes. The value of the attribute corresponds to the name of the function to call:
 
+``` xml
 	<object gad="0/1/2" id="KitchenLights" type="1.001" pyknxcallback="onLightsChanged">Kitchen Lights</object>
+```
 
 - **use pyknxconf.py** to automatically append to the linknx XML configuration rules that are required for the communication to work. These rules use ioport actions to send data to the Python daemon but you don't have to mess with that if you are not willing to::
 
-	$>pyknxconf.py -i linknx.xml -o patchedlinknx.xml
+> pyknxconf.py -i linknx.xml -o patchedlinknx.xml
 
  See pyknxconf.py --help for a complete list of options. This command will declare the ioport and a few rules that are necessary for the communication to work. In the output xml file, you should read::
 
+``` xml
 	<ioport host="127.0.0.1" id="pyknxcommunicator" port="1029" type="tcp"/>
+```
 
 - start Linknx with the above configuration::
 
-	$>linknx --config=patchedlinknx.xml
+> linknx --config=patchedlinknx.xml
 
 - start an instance of the communicator using **pyknxcommunicator.py**. The name of a file of your own that implements every function declared with pyknxcallback attributes shall be **passed to the command line**::
 
-	$>pyknxcommunicator.py -f myuserfile.py
+> pyknxcommunicator.py -f myuserfile.py
 
 And that's all. Every callback is passed a 'Context' instance that implements an **'object' property** which can be used to identify the object that is the source of the event on Linknx's side. Simply write 'context.object.value' to retrieve or change the value of the object.
 
@@ -130,13 +132,13 @@ How to install
 Two standard ways: using pip or calling setup.py manually.
 With pip for Python 3 (http://www.pip-installer.org), simply do::
 
-	pip3 install pyknx
+> pip3 install pyknx
 
 You can optionally add --install-option="--user" to tell setup.py to install in your home rather than one the system-wide locations.
 
 The other way: uncompress archive. Then calling setup.py directly boils down to::
 
-	python setup.py install
+> python setup.py install
 
 You can optionally add --user to install in your home.
 Please refer to distutils documentation for further details.
