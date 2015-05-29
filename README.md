@@ -9,7 +9,6 @@ Copyright (C) 2012-2014 Cyrille Defranoux
 
 Contact me at knx at aminate dot net
 
-For the documentation about how to use Pyknx, please see the wiki on [Github!](https://github.com/2franix/pyknx)
 ----------------------------------------------------------------------
 
 Python Version Requirement
