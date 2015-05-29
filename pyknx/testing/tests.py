@@ -124,7 +124,8 @@ class PyknxTestCase(base.WithLinknxTestCase):
         testValues('Extended Ascii String14', ('àbcdéfghîjklmn', 'ôpqrstùvwxyzab', 'ÀBCDÉFGHÎJKLMN', 'ÔPQRSTÙVWXYZAB'))
         testValues('String', ('àbcdéfghîjklmn', 'ôpqrstùvwxyzab', 'ÀBCDÉFGHÎJKLMN', 'ÔPQRSTÙVWXYZAB'))
         testValues('Int64', (-2147483647, -10000000, 0, 100000000, 2147483647))
-        testValues('Latin1 Char', ('b', 'à', 'é', '1', '%', '&'))
+        testValues('Time', ('10:34:27', '23:45:56'))
+        testValues('Date', (('2015-02-03', '2015-2-3'), '2014-11-28'))
 
     def testEmailServerAddress(self):
         self.assertEqual(self.linknx.emailServerInfo, ('emailprovider.com', 25, 'linknx@foo.com'))

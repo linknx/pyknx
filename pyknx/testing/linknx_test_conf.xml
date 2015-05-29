@@ -21,6 +21,8 @@
 		<object flags="r"  id="String" init="default value for 28.001" type="28.001"/> 
 		<object flags="r"  id="Int64" init="0" type="29.xxx"/> 
 		<object flags="r"  id="Latin1 Char" init="à" type="4.002"/> 
+		<object flags="r"  id="Time" type="10.001"/> 
+		<object flags="r"  id="Date" type="11.001"/> 
 	</objects>
 	<logging level="DEBUG"/>
 </config>
