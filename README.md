@@ -142,7 +142,7 @@ With pip for Python 3 (http://www.pip-installer.org), simply do::
 
 > pip3 install pyknx
 
-You can optionally add --install-option="--user" to tell setup.py to install in your home rather than one the system-wide locations.
+You can optionally add --install-option="--user" to tell setup.py to install in your home rather than in one of the system-wide locations.
 
 The other way: uncompress archive. Then calling setup.py directly boils down to::
 
@@ -167,7 +167,7 @@ For the full version of the GNU General Public License, please refer to http://w
 
 Feel free to contact me by email (knx at aminate dot net) for feature requests or bug reports or simply to let me know whether you find this package useful or terribly useless! User feedback is never a waste of time.
 
-Change Log
+Changelog
 ==========
 1.0.0
 -----
