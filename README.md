@@ -95,7 +95,7 @@ Pyknx relies on the built-in **ioport communication** of Linknx. The principle i
  See pyknxconf.py --help for a complete list of options. This command will declare the ioport and a few rules that are necessary for the communication to work. In the output xml file, you should read::
 
 ``` xml
-	<ioport host="127.0.0.1" id="pyknxcommunicator" port="1029" type="tcp"/>
+	<ioport host="127.0.0.1" id="pyknx" port="1029" type="tcp"/>
 ```
 
 - start Linknx with the above configuration::
@@ -107,6 +107,18 @@ Pyknx relies on the built-in **ioport communication** of Linknx. The principle i
 > pyknxcommunicator.py -f myuserfile.py
 
 And that's all. Every callback is passed a 'Context' instance that implements an **'object' property** which can be used to identify the object that is the source of the event on Linknx's side. Simply write 'context.object.value' to retrieve or change the value of the object.
+
+Use several communicators with the same linknx instance
+=======================================================
+This is definitely advanced usage but if you happen to need several Pyknx communicator instances connected to the same Linknx instance, you will have to assign non-default names to your communicators (or at least, leave at most one communicator with the default name "pyknx").
+
+By default, the communicator is named "pyknx", which makes pyknxconf.py search for "pyknxcallback" attributes in the configuration file for Linknx and generate "pyknx[ObjectId]" rules in this same configuration. "pyknx" is also the name assigned to the Linknx ioport used by Linknx to notify the communicator of events.
+
+Thankfully, pyknxconf.py allows to change this default name, by means of its "-n" argument:
+
+`pyknxconf.py -n mycustomname -i linknx.xml -o patchedlinknx.xml`
+
+This will produce quite the same result as described above, except that pyknxconf.py will only take attributes named "customnamecallback" attributes into account. If an object is of interest for several communicators, specify as many "xxxxcallback" attributes as related communicators.
 
 Initialize and dispose the user script
 ======================================

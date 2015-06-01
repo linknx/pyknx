@@ -30,7 +30,7 @@ tcpsocket.py: an internal module that implements common functionality related to
 """
 __all__ = ['linknx', 'communicator']
 
-class Version:
+class Version(object):
     def __init__(self, major, minor, revision, maturityLevel='', maturationStep=None):
         if maturityLevel not in ('a', 'b', ''):
             raise Exception('Unknown maturity level.')
@@ -82,7 +82,7 @@ class Version:
         otherComponents = other.components
 
         if comparisonType == 0: # Equality.
-            return selfComponents == otherComponents 
+            return selfComponents == otherComponents
         else:
             for i in range(min(len(selfComponents), len(otherComponents))):
                 c1 = selfComponents[i]
@@ -119,6 +119,6 @@ class Version:
             else:
                 return '{major}.{minor}.{revision}{maturityLevel}{maturationStep}'.format(**vars(self))
 
-version = Version(2, 2, 0)
+version = Version(2, 2, 1)
 __version__=str(version)
 

@@ -50,6 +50,10 @@ class Configurator:
 
         return self._config
 
+    @property
+    def callbackAttributeName(self):
+        return '{0}callback'.format(self._communicatorName)
+
     def readFileFromStdIn(self):
         return ''.join(sys.stdin.readlines())
 
@@ -98,7 +102,7 @@ class Configurator:
         objectNodes = config.getElementsByTagName('objects')[0]
         configuredAtLeastOne = False
         definesLegacyCallbackAttribute = False
-        callbackAttributeName = '{0}callback'.format(self._communicatorName)
+        callbackAttributeName = self.callbackAttributeName
         for objectNode in objectNodes.getElementsByTagName('object'):
             objectConfig = ObjectConfig(objectNode)
             objectId = objectConfig.id
