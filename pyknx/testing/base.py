@@ -258,7 +258,7 @@ class WithLinknxTestCase(TestCaseBase):
                     linknxPatchedConfigFile = os.path.join(testDir, 'autogenlinknx.conf.xml')
                     if os.path.exists(linknxPatchedConfigFile):
                         os.remove(linknxPatchedConfigFile)
-                    self.configurator = configurator.Configurator(self.linknxXMLConfig, linknxPatchedConfigFile, self.communicatorAddress, 'nondefaultprefixfortest')
+                    self.configurator = configurator.Configurator(self.linknxXMLConfig, linknxPatchedConfigFile, self.communicatorAddress)
                     self.configurator.cleanConfig()
                     self.configurator.generateConfig()
                     self.configurator.writeConfig()

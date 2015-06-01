@@ -285,7 +285,7 @@ class ObjectConfig:
         self.xml = configNode
         self.type = configNode.getAttribute('type')
         self.gad = configNode.getAttribute('gad')
-        self.callback = configNode.getAttribute('pyknxcallback')
+        # self.callback = configNode.getAttribute('pyknxcallback')
         self.init = configNode.getAttribute('init') if configNode.hasAttribute('init') else 'request'
         self.flags = configNode.getAttribute('flags') if configNode.hasAttribute('flags') else 'cwtu'
         self.caption = ObjectConfig.getTextInElement(configNode, mustFind=False).strip('\n\t ')

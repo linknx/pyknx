@@ -231,3 +231,7 @@ Implemented issue #2 to support datapoints 10 and 11 which represent date and ti
 2.1.2
 -----
 Fixed some issues with the markdown README.
+
+2.2.0
+-----
+Implemented [issue #3](https://github.com/2franix/pyknx/issues/3) to allow the connection of several communicators to the same Linknx instance. This introduces a breaking change documented in the Github issue's description. 

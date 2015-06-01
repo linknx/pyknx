@@ -31,7 +31,7 @@ import socket
 
 class Configurator:
     """ Object able to automatically patch the linknx configuration xml to add python bindings. """
-    def __init__(self, sourceFile, outputFile, address, communicatorName='pyknxcommunicator'):
+    def __init__(self, sourceFile, outputFile, address, communicatorName='pyknx'):
         self._address = address
         self._sourceFile = sourceFile
         self._outputFile = outputFile
@@ -72,7 +72,7 @@ class Configurator:
         servicesNode = self._getOrAddConfigElement(self.config, 'services')
         ioportsNode = self._getOrAddConfigElement(servicesNode, 'ioports')
         for ioportNode in ioportsNode.getElementsByTagName('ioport'):
-            if ioportNode.getAttribute('id') == 'pyknxcommunicator':
+            if ioportNode.getAttribute('id') == self._communicatorName:
                 logger.reportInfo('Clean ' + ioportNode.toxml())
                 ioportsNode.removeChild(ioportNode)
 
@@ -97,11 +97,16 @@ class Configurator:
         # Generate a rule for each object that has a callback in the user file.
         objectNodes = config.getElementsByTagName('objects')[0]
         configuredAtLeastOne = False
+        definesLegacyCallbackAttribute = False
+        callbackAttributeName = '{0}callback'.format(self._communicatorName)
         for objectNode in objectNodes.getElementsByTagName('object'):
             objectConfig = ObjectConfig(objectNode)
             objectId = objectConfig.id
-            if not objectConfig.callback:
-                logger.reportDebug('No callback found for object ' + objectConfig.id)
+            callback = objectNode.getAttribute(callbackAttributeName)
+            if callback == None or callback == '':
+                if objectNode.getAttribute('pyknxcallback') != None:
+                    definesLegacyCallbackAttribute = True
+                logger.reportDebug('No callback found for object ' + objectConfig.id + ' (no {0} attribute for this object)'.format(callbackAttributeName))
                 continue
 
             configuredAtLeastOne = True
@@ -119,7 +124,7 @@ class Configurator:
             actionListNode = doc.createElement('actionlist')
             actionListNode.setAttribute('type', 'if-true')
             ruleNode.appendChild(actionListNode)
-            actionNode = self.createActionNode(objectConfig.callback, {'objectId' : objectId})
+            actionNode = self.createActionNode(callback, {'objectId' : objectId})
             actionListNode.appendChild(actionNode)
             # actionListIfFalseNode = actionListNode.cloneNode(True)
             # actionListIfFalseNode.setAttribute('type', 'on-false')
@@ -127,7 +132,9 @@ class Configurator:
             rulesNode.appendChild(ruleNode)
 
         if not configuredAtLeastOne:
-            logger.reportInfo('Nothing to do. None of the objects does define a pyknxcallback attribute.')
+            logger.reportInfo('Nothing to do. None of the objects does define a callback attribute.')
+            if definesLegacyCallbackAttribute:
+                logger.reportWarning('There is at least one pyknxcallback attribute in the config file. These attributes were recognized by Pyknx before version 2.2. Did you forget to rename them to {0}?'.format(callbackAttributeName))
         else:
             # Add an ioport service for the communicator.
             servicesNode = self._getOrAddConfigElement(config, 'services')

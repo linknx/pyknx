@@ -186,7 +186,7 @@ class Communicator:
         Initialize the daemon.
 
         linknx -- The wrapper of the Linknx server to communicate with.
-        userFile -- The file that implements the user-defined functions to be called when objects which have a pyknxcallback attribute in the Linknx configuration change.
+        userFile -- The file that implements the user-defined functions to be called when objects which have a callback attribute in the Linknx configuration change.
         address -- The address the communicator will listen on, defined as a tuple (ip address, port). The default is ('localhost', 1029).
         userScriptArgs -- A dictionary of extra arguments to expose in the CallbackContext instance passed to the initializeUserScript function (if implemented in the user file). It defaults to empty.
 
