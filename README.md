@@ -226,6 +226,7 @@ Added the ability to get values for a collection of objects, rather than calling
 2.1.0
 -----
 Added a version object to the package.
+Implemented issue #2 to support datapoints 10 and 11 which represent date and time objects.
 
 2.1.2
 -----
