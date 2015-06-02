@@ -65,22 +65,6 @@ The example below shows how to implement a function that can be called each time
 
 Refer to section [How does it work?](https://github.com/2franix/pyknx#how-does-it-work) to know how to configure your environment to make such magic happen. 
 
-Why Pyknx?
-==========
-
-There is no doubt that Linknx is a very powerful, stable and simple-to-configure solution. It is sufficient for most needs in the frame of home automation. Nevertheless, as a developer, I sometimes find frustrating not having the opportunity to replace a set of XML rules in my Linknx config by a piece of code...
-
-I first wrote a simple python script called lwknxclient whose unique functionality is to read/write Linknx object's values. This script solved the problem of easily sending data to Linknx from a bash script.
-
-Then, my requirements evolved drastically as I wanted to implement my own alarm system to protect my home. I have a few door switches, cameras and smoke detectors that I wanted to use. I first implemented a simple version in pure XML that worked but it had many drawbacks:
-
-- the configuration is quite verbose. This is the very nature of XML. Factorization is hardly ever possible.
-- the configuration is tricky to test. I had to test it interactively after each modification. I quickly reached a point from which I was too afraid breaking something to add new functionality to my system.
-- I had to rely on bash scripts for each non-trivial action executed by Linknx, which led to a bunch of scripts disseminated to various places on my server. Difficult to maintain too... And, no offense, but I have to respectfully admit that bash is not the kind of language I am happy to work with.
-- calling external scripts from within shell-cmd actions has a major drawback: the script's lifetime is equal to the action's one. If the script has to retain some variables between two executions, it has no solution but polluting Linknx objects pool or storing data to files. None of these are convenient for a non-trivial application.
-
-The answer to those problems was to implement a daemon in Python that manages my alarm system. This alarm system is available as the Homewatcher package: https://pypi.python.org/pypi/homewatcher/
-
 How does it work?
 =================
 Pyknx relies on the built-in **ioport communication** of Linknx. The principle is as following:
@@ -164,6 +148,22 @@ The other way: uncompress archive. Then calling setup.py directly boils down to:
 
 You can optionally add --user to install in your home.
 Please refer to distutils documentation for further details.
+
+Why Pyknx?
+==========
+
+There is no doubt that Linknx is a very powerful, stable and simple-to-configure solution. It is sufficient for most needs in the frame of home automation. Nevertheless, as a developer, I sometimes find frustrating not having the opportunity to replace a set of XML rules in my Linknx config by a piece of code...
+
+I first wrote a simple python script called lwknxclient whose unique functionality is to read/write Linknx object's values. This script solved the problem of easily sending data to Linknx from a bash script.
+
+Then, my requirements evolved drastically as I wanted to implement my own alarm system to protect my home. I have a few door switches, cameras and smoke detectors that I wanted to use. I first implemented a simple version in pure XML that worked but it had many drawbacks:
+
+- the configuration is quite verbose. This is the very nature of XML. Factorization is hardly ever possible.
+- the configuration is tricky to test. I had to test it interactively after each modification. I quickly reached a point from which I was too afraid breaking something to add new functionality to my system.
+- I had to rely on bash scripts for each non-trivial action executed by Linknx, which led to a bunch of scripts disseminated to various places on my server. Difficult to maintain too... And, no offense, but I have to respectfully admit that bash is not the kind of language I am happy to work with.
+- calling external scripts from within shell-cmd actions has a major drawback: the script's lifetime is equal to the action's one. If the script has to retain some variables between two executions, it has no solution but polluting Linknx objects pool or storing data to files. None of these are convenient for a non-trivial application.
+
+The answer to those problems was to implement a daemon in Python that manages my alarm system. This alarm system is available as the Homewatcher package: https://pypi.python.org/pypi/homewatcher/
 
 License
 =======
