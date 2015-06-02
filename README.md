@@ -26,9 +26,12 @@ As usual, feedback regarding version 2 is greatly appreciated.
 What is it?
 ===========
 
-Pyknx is a package that is aimed at providing basic functionality related to communicating with a Linknx instance. It should help in sending or receiving data to/from Linknx.
+Pyknx is a package that is aimed at providing basic functionality related to communicating with a Linknx instance. Pyknx provides python modules and scripts to:
+- read or change value of linknx objects or execute linknx actions from the command line or from another Python application. See the section about [standalone scripts below](https://github.com/2franix/pyknx#contents-of-the-package) if you are searching for an easy way to get or change value of objects from a bash script, for instance.
+- make a Python application be notified whenever some linknx objects change. This tutorial is mostly devoted to guiding the user through the steps required to make an app react on linknx objects' events.
 
-Once installed, you should be able to read or write your Linknx objects from your Python environment::
+To illustrate the communication between linknx and a python app using Pyknx, let's see what can be achieved with some examples.
+First, let's output the value of some objects:
 
 	from pyknx import linknx
 	server = linknx.Linknx() # Connect to localhost:1028
@@ -47,8 +50,8 @@ For better performance, the snippet above can be rewritten like this since versi
 	for lightObj, value in lightObjects.getValues(): # getValues get all values with a single request to Linknx!
 		print '{0} is currently {1}'.format(lightObj.id, value)
 
-Pyknx allows to execute functions implemented in a python file of your own, with the script running as a daemon. This allows to easily store data from one execution to another.
-The example below demonstrates how one can implement a function that can be called each time an object changes in Linknx::
+In these samples, there is no configuration required. Simply copy and paste them in a python script and it should work (pay attention to linknx hostname and port if you do not use default ones).
+The example below shows how to implement a function that can be called each time the value of an object change. The module that provides the function *onLightsChanged* runs in the context of a *Pyknx communicator* which makes it run as a daemon. This allows to easily store data from one execution to another (see the *counters* global variable).
 
 	counters = {}
 	def onLightsChanged(context):
