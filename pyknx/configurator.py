@@ -108,7 +108,8 @@ class Configurator:
             objectId = objectConfig.id
             callback = objectNode.getAttribute(callbackAttributeName)
             if callback == None or callback == '':
-                if objectNode.getAttribute('pyknxcallback') != None:
+                if objectNode.getAttribute('pyknxcallback'):
+                    logger.reportError('pyknxcallback found on {0}'.format(objectNode.toxml()))
                     definesLegacyCallbackAttribute = True
                 logger.reportDebug('No callback found for object ' + objectConfig.id + ' (no {0} attribute for this object)'.format(callbackAttributeName))
                 continue
