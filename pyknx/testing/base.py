@@ -295,11 +295,13 @@ class WithLinknxTestCase(TestCaseBase):
     def tearDown(self):
         logger.reportInfo('Tearing down...')
 
-        logger.reportInfo('Stopping communicator...')
-        if self.communicator: self.communicator.stopListening()
-        logger.reportInfo('communicator is stopped.')
-        if self.linknxProcess: self.linknxProcess.kill()
-        logger.reportInfo('linknx is stopped.')
+        if self.communicator:
+            logger.reportInfo('Stopping communicator...')
+            self.communicator.stopListening()
+            logger.reportInfo('communicator is stopped.')
+        if self.linknxProcess:
+            self.linknxProcess.kill()
+            logger.reportInfo('linknx is stopped.')
         if self.linknxOutputFDs:
             self.linknxOutputFDs[0].close()
             self.linknxOutputFDs[1].close()
