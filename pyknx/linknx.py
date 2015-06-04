@@ -198,6 +198,12 @@ class Linknx:
 
         raise Exception('Linknx is not reachable.')
 
+    def tryGetObject(self, id):
+        try:
+            return self.getObject(id)
+        except Linknx.InvalidObjectIdException:
+            return None
+
     def getObject(self, id):
         """ Get the object of given identifier. """
         if id is None: return None
