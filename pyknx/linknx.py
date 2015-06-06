@@ -64,7 +64,7 @@ class Linknx:
                         break
             finally:
                 self.socket.close()
-                logger.reportDebug('Thread is now stopped.')
+                if self.isAlive(): logger.reportDebug('Thread is now stopped.')
 
         @property
         def isFinalized(self):
@@ -299,7 +299,7 @@ class ObjectConfig:
         if firstTypeDigit == '1':
             self.typeCategory = 'bool'
         elif firstTypeDigit in ['5', '6', '7', '8', '9', '12', '13', '29']:
-            if self.type in ['5.001', '5.003', '9.xxx']:
+            if self.type in ('5.001', '5.003') or firstTypeDigit == '9':
                 self.typeCategory='float'
             else:
                 self.typeCategory = 'int'
