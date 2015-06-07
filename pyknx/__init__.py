@@ -119,6 +119,6 @@ class Version(object):
             else:
                 return '{major}.{minor}.{revision}{maturityLevel}{maturationStep}'.format(**vars(self))
 
-version = Version(2, 2, 2)
+version = Version(2, 2, 3)
 __version__=str(version)
 
