@@ -254,3 +254,7 @@ Implemented [issue #3](https://github.com/2franix/pyknx/issues/3) to allow the c
 2.2.2
 -----
 Added Linknx.tryGetObject(self, objectId) to get an optional object without raising an exception if not found.
+
+2.3.0
+-----
+Modified the behaviour of pyknxread.py to have it sort the results by object id. This makes the output more predictable.

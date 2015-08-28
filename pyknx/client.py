@@ -72,7 +72,8 @@ def handleRequest(requestType, doc):
             report = objects.getValues()
             longestId = max([len(obj) for obj in report.keys()])
             succeeds = True
-            for o, v in report.items():
+            for o in sorted(report):
+                v = report[o]
                 spaceCount = longestId - len(o)
                 spaces=''
                 while spaceCount > 0:
