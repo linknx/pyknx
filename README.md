@@ -107,7 +107,7 @@ Thankfully, pyknxconf.py allows to change this default name, by means of its "-n
 
 This will produce quite the same result as described above, except that pyknxconf.py will only take attributes named "customnamecallback" attributes into account. If an object is of interest for several communicators, specify as many "xxxxcallback" attributes as related communicators.
 
-Initialize and dispose the user script
+Initialize and dispose of the user script
 ======================================
 The Pyknx communicator automatically calls some user script's callbacks if they are defined:
 - initializeUserScript(context) is called when the communicator is initialized and ready to go
