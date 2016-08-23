@@ -216,7 +216,7 @@ class Linknx:
 
     def getObjects(self, patterns=None, objectIds=None):
         """ Get the objects whose identifiers are in the given list or match the given regex pattern. If neither a pattern nor object identifiers are provided, returns all objects. """
-        actualPatterns = patterns if (isinstance(patterns, collections.Iterable) or patterns == None) else (patterns,)
+        actualPatterns = patterns if (not isinstance(patterns, str) or patterns == None) else (patterns,)
 
         objects = ObjectCollection(self)
 

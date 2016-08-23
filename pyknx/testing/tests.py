@@ -135,5 +135,12 @@ class PyknxTestCase(base.WithLinknxTestCase):
     def testEmailServerAddress(self):
         self.assertEqual(self.linknx.emailServerInfo, ('emailprovider.com', 25, 'linknx@foo.com'))
 
+    def testDocumentationSamples(self):
+        allAObjects = self.linknx.getObjects('A.*')
+        logger.reportInfo(str(allAObjects))
+        self.assertEqual(len(allAObjects), 3)
+        for objectId, value in allAObjects.getValues().items():
+            self.assertIn(objectId, ['Angle Unsigned Byte', 'Ascii String14', 'Extended Ascii String14'])
+
 if __name__ == '__main__':
     unittest.main()

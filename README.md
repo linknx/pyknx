@@ -47,7 +47,7 @@ For better performance, the snippet above can be rewritten like this since versi
 
 	# Print status of all lights. The regex assumes that all lights objects are prefixed with 'Lights'.
 	lightObjects = server.getObjects('Lights.*')
-	for lightObj, value in lightObjects.getValues(): # getValues get all values with a single request to Linknx!
+	for lightObj, value in lightObjects.getValues().items(): # getValues gets all values with a single request to Linknx!
 		print '{0} is currently {1}'.format(lightObj.id, value)
 
 In these samples, there is no configuration required. Simply copy and paste them in a python script and it should work (pay attention to linknx hostname and port if you do not use default ones).
@@ -258,3 +258,7 @@ Added Linknx.tryGetObject(self, objectId) to get an optional object without rais
 2.3.0
 -----
 Modified the behaviour of pyknxread.py to have it sort the results by object id. This makes the output more predictable.
+
+2.3.1
+-----
+Fixed [issue #6](https://github.com/2franix/pyknx/issues/6) to make samples from this documentation work.
