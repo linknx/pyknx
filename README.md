@@ -7,8 +7,6 @@ Pure python modules and scripts
 
 Copyright (C) 2012-2014 Cyrille Defranoux
 
-Contact me at knx at aminate dot net
-
 ----------------------------------------------------------------------
 
 Python Version Requirement
