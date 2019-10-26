@@ -2,9 +2,9 @@ usage: pyknxexecute.py [-h] [-s HOST] [-p PORT] [--action ACTION] [-v LEVEL]
 
 Lightweight command line client for linknx. It is aimed at executing actions
 defined by a XML string. The action to execute is read from standard input
-unless the --action option is set. Example of a valid action: <action type
-="set-value" id="kitchen_heating" value="comfort"/>. This string is passed as-
-is to linknx so refer to linknx's documentation for further details.
+unless the --action option is set. Example of a valid action: <action
+type="set-value" id="kitchen_heating" value="comfort"/>. This string is passed
+as-is to linknx so refer to linknx's documentation for further details.
 
 optional arguments:
   -h, --help            show this help message and exit
