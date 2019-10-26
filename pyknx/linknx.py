@@ -64,7 +64,7 @@ class Linknx:
                         break
             finally:
                 self.socket.close()
-                if self.isAlive(): logger.reportDebug('Thread is now stopped.')
+                if self.is_alive(): logger.reportDebug('Thread is now stopped.')
 
         @property
         def isFinalized(self):
