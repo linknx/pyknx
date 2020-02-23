@@ -62,7 +62,7 @@ if __name__ == '__main__':
     args.communicatorAddress = parseAddress(args.communicatorAddress, 'communicator address')
 
     try:
-        Communicator.run(args.linknxAddress, args.userFile, args.communicatorAddress, logFile=args.logFile, daemonizes=args.daemonize, pidFile=args.pidFile)
+        Communicator.run(args.linknxAddress, args.userFile, args.communicatorAddress, logFile=args.logFile, verbosityLevel=args.verbosityLevel, daemonizes=args.daemonize, pidFile=args.pidFile)
     except SystemExit:
         # This is a normal exit.
         pass
