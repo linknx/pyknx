@@ -128,17 +128,17 @@ This package also provides **additional python scripts** that are intended to ru
 ## Installation
 
 Two standard ways: using pip or calling setup.py manually.
-With pip for Python 3 (http://www.pip-installer.org), simply do::
+With pip for Python 3 (http://www.pip-installer.org), simply run
 
-> pip3 install pyknx
+`pip3 install pyknx`
 
-You can optionally add --install-option="--user" to tell setup.py to install in your home rather than in one of the system-wide locations.
+You can optionally add `--install-option="--user"` to tell `setup.py` to install in your home rather than in one of the system-wide locations.
 
-The other way: uncompress archive. Then calling setup.py directly boils down to::
+The other way: uncompress archive and execute `setup.py` yourself:
 
-> python setup.py install
+`python setup.py install`
 
-You can optionally add --user to install in your home.
+You can optionally add `--user` to install in your home.
 Please refer to distutils documentation for further details.
 
 ## Why Pyknx?
